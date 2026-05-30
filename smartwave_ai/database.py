@@ -68,13 +68,30 @@ class DbAuditLedger(Base):
 
 
 def seed_database_if_empty(db) -> None:
-    # Seed containers if empty
-    if db.query(DbContainer).count() == 0:
-        seed_path = Path(__file__).resolve().parents[1] / "data" / "containers_registry.json"
-        if seed_path.exists():
-            with seed_path.open("r", encoding="utf-8") as f:
-                records = json.load(f)
-            for r in records:
+    # Synchronize containers table with containers_registry.json
+    seed_path = Path(__file__).resolve().parents[1] / "data" / "containers_registry.json"
+    if seed_path.exists():
+        with seed_path.open("r", encoding="utf-8") as f:
+            records = json.load(f)
+        
+        # Get list of new container IDs
+        new_ids = {r["container_id"] for r in records}
+        
+        # Delete any database containers that are no longer in the registry JSON
+        db.query(DbContainer).filter(~DbContainer.container_id.in_(new_ids)).delete(synchronize_session=False)
+        
+        for r in records:
+            db_rec = db.query(DbContainer).filter_by(container_id=r["container_id"]).first()
+            if db_rec:
+                # Update existing fields
+                db_rec.lat = r["geo_coordinates"]["lat"]
+                db_rec.lon = r["geo_coordinates"]["lon"]
+                db_rec.container_type = r["container_type"]
+                db_rec.container_geometry = r["container_geometry"]
+                db_rec.district_zone = r["district_zone"]
+                db_rec.assigned_route_id = r["assigned_route_id"]
+            else:
+                # Insert new container record
                 db.add(
                     DbContainer(
                         container_id=r["container_id"],
@@ -87,8 +104,8 @@ def seed_database_if_empty(db) -> None:
                         last_emptied_timestamp=datetime.fromisoformat(r["last_emptied_timestamp"].replace("Z", "+00:00")),
                     )
                 )
-            db.commit()
-            print("Database seeded with container registry records.")
+        db.commit()
+        print("Database container registry synchronized successfully.")
 
 def initialize_db() -> None:
     global engine, SessionLocal
