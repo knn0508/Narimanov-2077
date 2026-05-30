@@ -17,12 +17,18 @@ from sqlalchemy import (
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///runtime/smartwave_dev.db")
+_FALLBACK_URL = "sqlite:///runtime/smartwave_dev.db"
 
 connect_args = {}
 if DATABASE_URL.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
 
-engine = create_engine(DATABASE_URL, connect_args=connect_args)
+_engine_kwargs: dict = {"connect_args": connect_args}
+if DATABASE_URL.startswith("postgresql"):
+    # Shorter connect_timeout so startup fails fast if the DB is unreachable
+    _engine_kwargs["connect_args"] = {"connect_timeout": 10}
+
+engine = create_engine(DATABASE_URL, **_engine_kwargs)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -86,19 +92,37 @@ def seed_database_if_empty(db) -> None:
             db.commit()
             print("Database seeded with container registry records.")
 
-
 def initialize_db() -> None:
-    # Ensure runtime dir exists
+    global engine, SessionLocal
+
+    # Ensure runtime dir exists (needed for SQLite fallback)
     Path("runtime").mkdir(parents=True, exist_ok=True)
-    
-    # Create tables
-    Base.metadata.create_all(engine)
-    
 
-
-    # Seed registry
-    db = SessionLocal()
     try:
-        seed_database_if_empty(db)
-    finally:
-        db.close()
+        # Create tables on the configured database
+        Base.metadata.create_all(engine)
+        db = SessionLocal()
+        try:
+            seed_database_if_empty(db)
+        finally:
+            db.close()
+        print(f"[DB] Connected to: {DATABASE_URL.split('@')[-1] if '@' in DATABASE_URL else DATABASE_URL}")
+    except Exception as exc:
+        print(
+            f"[DB] WARNING: Could not connect to configured database ({exc}). "
+            "Falling back to SQLite for this session."
+        )
+        # Swap engine to SQLite fallback so the rest of the app works
+        fallback_engine = create_engine(
+            _FALLBACK_URL, connect_args={"check_same_thread": False}
+        )
+        engine.dispose()
+        engine = fallback_engine
+        SessionLocal.configure(bind=engine)
+        Base.metadata.create_all(engine)
+        db = SessionLocal()
+        try:
+            seed_database_if_empty(db)
+        finally:
+            db.close()
+        print("[DB] SQLite fallback active — data will not persist across restarts.")
