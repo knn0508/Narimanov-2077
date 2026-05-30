@@ -34,5 +34,125 @@
     "district_zone": "Narimanov-Business-East",
     "assigned_route_id": "ROUTE-NRM-PLA-01",
     "last_emptied_timestamp": "2026-05-29T08:05:00Z"
+  },
+  {
+    "container_id": "bin-4",
+    "geo_coordinates": {
+      "lat": 40.405123,
+      "lon": 49.863456
+    },
+    "container_type": "mixed",
+    "container_geometry": "cylindrical",
+    "district_zone": "Narimanov-Residential-South",
+    "assigned_route_id": "ROUTE-NRM-AM-01",
+    "last_emptied_timestamp": "2026-05-29T05:30:00Z"
+  },
+  {
+    "container_id": "bin-5",
+    "geo_coordinates": {
+      "lat": 40.412345,
+      "lon": 49.868789
+    },
+    "container_type": "plastic",
+    "container_geometry": "rectangular",
+    "district_zone": "Narimanov-Business-West",
+    "assigned_route_id": "ROUTE-NRM-PLA-01",
+    "last_emptied_timestamp": "2026-05-29T09:15:00Z"
+  },
+  {
+    "container_id": "bin-6",
+    "geo_coordinates": {
+      "lat": 40.408765,
+      "lon": 49.871234
+    },
+    "container_type": "mixed",
+    "container_geometry": "rectangular",
+    "district_zone": "Narimanov-Metro-Corridor",
+    "assigned_route_id": "ROUTE-NRM-PM-02",
+    "last_emptied_timestamp": "2026-05-29T13:00:00Z"
+  },
+  {
+    "container_id": "bin-7",
+    "geo_coordinates": {
+      "lat": 40.401122,
+      "lon": 49.869988
+    },
+    "container_type": "plastic",
+    "container_geometry": "cylindrical",
+    "district_zone": "Narimanov-Residential-South",
+    "assigned_route_id": "ROUTE-NRM-PLA-01",
+    "last_emptied_timestamp": "2026-05-29T10:45:00Z"
+  },
+  {
+    "container_id": "bin-8",
+    "geo_coordinates": {
+      "lat": 40.419876,
+      "lon": 49.864321
+    },
+    "container_type": "mixed",
+    "container_geometry": "rectangular",
+    "district_zone": "Narimanov-Residential-North",
+    "assigned_route_id": "ROUTE-NRM-AM-01",
+    "last_emptied_timestamp": "2026-05-29T06:20:00Z"
+  },
+  {
+    "container_id": "bin-9",
+    "geo_coordinates": {
+      "lat": 40.414433,
+      "lon": 49.860112
+    },
+    "container_type": "plastic",
+    "container_geometry": "rectangular",
+    "district_zone": "Narimanov-Business-East",
+    "assigned_route_id": "ROUTE-NRM-PLA-01",
+    "last_emptied_timestamp": "2026-05-29T11:30:00Z"
+  },
+  {
+    "container_id": "bin-10",
+    "geo_coordinates": {
+      "lat": 40.407112,
+      "lon": 49.873445
+    },
+    "container_type": "mixed",
+    "container_geometry": "cylindrical",
+    "district_zone": "Narimanov-Metro-Corridor",
+    "assigned_route_id": "ROUTE-NRM-PM-02",
+    "last_emptied_timestamp": "2026-05-29T14:10:00Z"
+  },
+  {
+    "container_id": "bin-11",
+    "geo_coordinates": {
+      "lat": 40.403344,
+      "lon": 49.865566
+    },
+    "container_type": "plastic",
+    "container_geometry": "rectangular",
+    "district_zone": "Narimanov-Residential-South",
+    "assigned_route_id": "ROUTE-NRM-PLA-01",
+    "last_emptied_timestamp": "2026-05-29T12:00:00Z"
+  },
+  {
+    "container_id": "bin-12",
+    "geo_coordinates": {
+      "lat": 40.410998,
+      "lon": 49.866112
+    },
+    "container_type": "mixed",
+    "container_geometry": "rectangular",
+    "district_zone": "Narimanov-Residential-North",
+    "assigned_route_id": "ROUTE-NRM-AM-01",
+    "last_emptied_timestamp": "2026-05-29T07:45:00Z"
+  },
+  {
+    "container_id": "bin-13",
+    "geo_coordinates": {
+      "lat": 40.415566,
+      "lon": 49.862233
+    },
+    "container_type": "plastic",
+    "container_geometry": "cylindrical",
+    "district_zone": "Narimanov-Business-West",
+    "assigned_route_id": "ROUTE-NRM-PLA-01",
+    "last_emptied_timestamp": "2026-05-29T13:20:00Z"
   }
 ]
