@@ -1,0 +1,32 @@
+[
+  {
+    "vehicle_id": "NRM-FLEET-01",
+    "driver_id": "driver-az-01",
+    "capacity_m3": 6.5,
+    "current_location": {
+      "lat": 40.4099,
+      "lon": 49.8667
+    },
+    "fuel_level": 0.82
+  },
+  {
+    "vehicle_id": "NRM-FLEET-02",
+    "driver_id": "driver-az-02",
+    "capacity_m3": 5.0,
+    "current_location": {
+      "lat": 40.4022,
+      "lon": 49.8718
+    },
+    "fuel_level": 0.67
+  },
+  {
+    "vehicle_id": "NRM-FLEET-03",
+    "driver_id": "driver-az-03",
+    "capacity_m3": 4.0,
+    "current_location": {
+      "lat": 40.4165,
+      "lon": 49.862
+    },
+    "fuel_level": 0.74
+  }
+]

@@ -1,0 +1,2 @@
+"""SmartWave AI service package."""
+

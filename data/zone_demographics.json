@@ -1,0 +1,24 @@
+[
+  {
+    "district_zone": "Narimanov-Residential-North",
+    "zone_type": "RESIDENTIAL",
+    "residential_density_index": 0.86,
+    "commercial_activity_index": 0.32,
+    "market_days": []
+  },
+  {
+    "district_zone": "Narimanov-Metro-Corridor",
+    "zone_type": "TRANSIT",
+    "residential_density_index": 0.58,
+    "commercial_activity_index": 0.78,
+    "market_days": []
+  },
+  {
+    "district_zone": "Narimanov-Business-East",
+    "zone_type": "COMMERCIAL",
+    "residential_density_index": 0.42,
+    "commercial_activity_index": 0.91,
+    "market_days": []
+  }
+]
+

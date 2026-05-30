@@ -1,0 +1,9 @@
+runtime/
+__pycache__/
+.pytest_cache/
+*.pyc
+.venv/
+.env
+pytest-cache-files-*/
+Ultralytics/
+

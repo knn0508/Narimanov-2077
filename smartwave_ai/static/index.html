@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartWave AI — Operations Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(22, 28, 45, 0.45);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary: #00f2fe;
+            --primary-glow: rgba(0, 242, 254, 0.35);
+            --secondary: #4facfe;
+            --accent-green: #00f2fe;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --glow: 0 0 15px var(--primary-glow);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(79, 172, 254, 0.1) 0px, transparent 50%),
+                radial-gradient(at 90% 90%, rgba(0, 242, 254, 0.08) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(11, 15, 25, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #0b0f19;
+            box-shadow: var(--glow);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff 50%, var(--text-muted) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--green);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px var(--green); }
+            100% { transform: scale(0.9); opacity: 0.6; }
+        }
+
+        .container-wrapper {
+            flex: 1;
+            display: flex;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            text-align: left;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+        }
+
+        .nav-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-btn.active {
+            background: var(--card-bg);
+            border-color: var(--card-border);
+            color: var(--primary);
+            box-shadow: inset 4px 0 0 var(--primary);
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(16px);
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        select, input[type="text"], input[type="file"], textarea {
+            width: 100%;
+            background: rgba(11, 15, 25, 0.6);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input[type="text"]:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary-glow);
+        }
+
+        .dropzone {
+            border: 2px dashed var(--card-border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(11, 15, 25, 0.3);
+        }
+
+        .dropzone:hover {
+            border-color: var(--primary);
+            background: rgba(0, 242, 254, 0.02);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #0b0f19;
+            font-weight: 700;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: var(--glow);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--text-muted);
+            box-shadow: none;
+        }
+
+        .output-box {
+            background: rgba(11, 15, 25, 0.8);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            max-height: 400px;
+            white-space: pre-wrap;
+            color: #8adefc;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .gauge-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .gauge-radial {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0%, rgba(255,255,255,0.05) 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: var(--glow);
+        }
+
+        .gauge-radial::before {
+            content: '';
+            position: absolute;
+            width: 125px;
+            height: 125px;
+            border-radius: 50%;
+            background: var(--bg-color);
+        }
+
+        .gauge-label {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .gauge-val {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .gauge-txt {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-green { background: rgba(16, 185, 129, 0.1); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-yellow { background: rgba(245, 158, 11, 0.1); color: var(--yellow); border: 1px solid rgba(245, 158, 11, 0.2); }
+        .badge-red { background: rgba(239, 68, 68, 0.1); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: none;
+            object-fit: cover;
+            border: 1px solid var(--card-border);
+        }
+
+        .quick-coords {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .quick-coords button {
+            flex: 1;
+            font-size: 0.75rem;
+            padding: 6px;
+        }
+
+        .ledger-row {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 0;
+        }
+
+        .ledger-row:last-child {
+            border: none;
+        }
+
+        .ledger-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .ledger-payload {
+            font-size: 0.85rem;
+            color: #8adefc;
+            margin-bottom: 4px;
+        }
+
+        .ledger-hashes {
+            font-size: 0.7rem;
+            font-family: monospace;
+            background: rgba(0,0,0,0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: var(--text-muted);
+            word-break: break-all;
+        }
+
+        .ledger-hashes span {
+            color: var(--secondary);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-section">
+            <div class="logo-badge">W</div>
+            <div>
+                <h1>SmartWave AI</h1>
+                <p style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Baku waste analytics platform</p>
+            </div>
+        </div>
+        <div class="system-status">
+            <div class="status-dot"></div>
+            <span>Intelligent Core Active</span>
+        </div>
+    </header>
+
+    <div class="container-wrapper">
+        <div class="sidebar">
+            <button class="nav-btn active" onclick="switchTab('visual-report')">📷 Visual Report</button>
+        </div>
+ 
+        <div class="main-content">
+            <!-- TAB 1: VISUAL REPORT -->
+            <div id="visual-report" class="tab-panel active">
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Submit Photo Report</h2>
+                        </div>
+                        <form id="report-form" onsubmit="submitVisualReport(event)">
+                            <div class="form-group">
+                                <label for="report-container">Select Container</label>
+                                <select id="report-container" onchange="updateQrPlaceholder()">
+                                    <option value="NRM-ORG-001">NRM-ORG-001 (Organic)</option>
+                                    <option value="NRM-MIX-014">NRM-MIX-014 (Mixed)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="report-qr">QR Code UUID</label>
+                                <input type="text" id="report-qr" value="1b8bcf70-4a18-48f2-a6a6-b3f3f5c10a01">
+                            </div>
+                            <div class="form-group">
+                                <label for="report-comment">Comment / Description (Azerbaijani)</label>
+                                <textarea id="report-comment" rows="2" placeholder="Zibil qabı dolub daşır, zibil torbaları yerə tökülüb..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Container Image Upload</label>
+                                <div class="dropzone" onclick="document.getElementById('report-file').click()">
+                                    <p style="font-size: 0.95rem; font-weight: 600;">Drag & Drop or Click to Upload Image</p>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">PNG, JPEG formats accepted</p>
+                                    <input type="file" id="report-file" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                                </div>
+                                <img id="report-img-preview" class="image-preview" alt="Preview">
+                            </div>
+                            <button type="submit" class="btn">Analyze Waste Photo</button>
+                        </form>
+                    </div>
+ 
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Visual Analysis results</h2>
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            <div class="gauge-container">
+                                <div class="gauge-radial" id="report-gauge">
+                                    <div class="gauge-label">
+                                        <div class="gauge-val" id="report-fullness">0%</div>
+                                        <div class="gauge-txt">Fullness</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="width: 100%; display: flex; flex-direction: column; gap: 12px; margin-top: 1rem;">
+                                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">
+                                    <span style="color: var(--text-muted); font-weight: 500;">Status Level</span>
+                                    <span id="report-status" class="badge badge-green">Green</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">
+                                    <span style="color: var(--text-muted); font-weight: 500;">Odor / Organic Risk</span>
+                                    <span id="report-odor" style="font-weight: 600; color: var(--green);">No Risk</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">
+                                    <span style="color: var(--text-muted); font-weight: 500;">Detection Confidence</span>
+                                    <span id="report-confidence" style="font-weight: 600;">0.00</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">
+                                    <span style="color: var(--text-muted); font-weight: 500;">Needs Review</span>
+                                    <span id="report-review" style="font-weight: 600; color: var(--green);">No</span>
+                                </div>
+                                
+                                <!-- Comment AI Result Box -->
+                                <div style="width: 100%; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--card-border); padding-top: 12px; margin-top: 12px;" id="comment-analysis-box">
+                                    <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--primary); text-transform: uppercase;">Comment AI Verification</h3>
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; margin-top: 4px;">
+                                        <span style="color: var(--text-muted); font-weight: 500;">Consistency (Uyğunluq)</span>
+                                        <span id="comment-consistency" style="font-weight: 600; color: var(--text-muted);">—</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">
+                                        <span style="color: var(--text-muted); font-weight: 500;">Comment Urgency Score</span>
+                                        <span id="comment-urgency" style="font-weight: 600; color: var(--text-muted);">—</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">
+                                        <span style="color: var(--text-muted); font-weight: 500;">Damage Detected</span>
+                                        <span id="comment-damage-detected" style="font-weight: 600; color: var(--text-muted);">—</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">
+                                        <span style="color: var(--text-muted); font-weight: 500;">Damage Type</span>
+                                        <span id="comment-damage-type" style="font-weight: 600; color: var(--text-muted);">—</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">
+                                        <span style="color: var(--text-muted); font-weight: 500;">Damage Severity</span>
+                                        <span id="comment-damage-severity" style="font-weight: 600; color: var(--text-muted);">—</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">
+                                        <span style="color: var(--text-muted); font-weight: 500;">Lid Status (Qapaq)</span>
+                                        <span id="comment-lid-status" style="font-weight: 600; color: var(--text-muted);">—</span>
+                                    </div>
+                                    <div>
+                                        <label style="margin-top: 6px;">AI Reason / Explanation</label>
+                                        <p id="comment-reason" style="background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--card-border); font-size: 0.85rem; line-height: 1.4; color: var(--text-muted);">
+                                            No comment analyzed yet.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 1.5rem;">
+                            <label>Raw API JSON Payload</label>
+                            <div class="output-box" id="report-raw">Waiting for submission...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            
+            // Find nav button that matches tab
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => {
+                if (btn.getAttribute('onclick').includes(tabId)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            if (tabId === 'audit-ledger') {
+                fetchAuditLedger();
+            }
+        }
+
+        // Setup and generate default worker token
+        window.addEventListener('DOMContentLoaded', () => {
+            generateWorkerToken();
+            updateQrPlaceholder();
+        });
+
+        function updateQrPlaceholder() {
+            const container = document.getElementById('report-container').value;
+            const qrInput = document.getElementById('report-qr');
+            if (container === 'NRM-ORG-001') {
+                qrInput.value = '1b8bcf70-4a18-48f2-a6a6-b3f3f5c10a01';
+            } else {
+                qrInput.value = '2c9cdf80-5b29-5ea3-b7b7-c4c4c6d21b12';
+            }
+        }
+
+        // Preview uploaded image
+        function previewImage(event) {
+            const preview = document.getElementById('report-img-preview');
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Submit Visual Report
+        async function submitVisualReport(e) {
+            e.preventDefault();
+            const containerId = document.getElementById('report-container').value;
+            const qrCode = document.getElementById('report-qr').value;
+            const commentText = document.getElementById('report-comment').value.trim();
+            const fileInput = document.getElementById('report-file');
+            const rawOutput = document.getElementById('report-raw');
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Please upload an image file first.');
+                return;
+            }
+
+            rawOutput.innerText = 'Uploading and running YOLOv8 visual segmentation...';
+            const file = fileInput.files[0];
+            const buffer = await file.arrayBuffer();
+
+            try {
+                let url = `/api/v1/containers/${containerId}/report`;
+                if (commentText) {
+                    url += `?comment=${encodeURIComponent(commentText)}`;
+                }
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-QR-Code-UUID': qrCode,
+                        'X-Session-ID': 'session-web-' + Math.random().toString(36).substring(3, 9),
+                        'Content-Type': 'image/jpeg'
+                    },
+                    body: buffer
+                });
+
+                const data = await response.json();
+                rawOutput.innerText = JSON.stringify(data, null, 2);
+
+                if (response.ok) {
+                    // Update visual gauges
+                    const score = data.fullness_score;
+                    const gauge = document.getElementById('report-gauge');
+                    
+                    if (data.container_closed) {
+                        document.getElementById('report-fullness').innerText = 'Closed';
+                        gauge.style.background = `conic-gradient(rgba(255,255,255,0.12) 100%, transparent 100%)`;
+                    } else {
+                        document.getElementById('report-fullness').innerText = score + '%';
+                        let color = 'var(--green)';
+                        if (score > 50 && score <= 70) color = 'var(--yellow)';
+                        if (score > 70) color = 'var(--red)';
+                        gauge.style.background = `conic-gradient(${color} ${score}%, rgba(255,255,255,0.05) ${score}%)`;
+                    }
+                    
+                    const statusBadge = document.getElementById('report-status');
+                    statusBadge.innerText = data.status_color;
+                    statusBadge.className = 'badge ' + (data.status_color === 'GREEN' ? 'badge-green' : data.status_color === 'YELLOW' ? 'badge-yellow' : 'badge-red');
+
+                    const odorSpan = document.getElementById('report-odor');
+                    if (data.odor_risk_flag) {
+                        odorSpan.innerText = 'ORGANIC OVERRIDE';
+                        odorSpan.style.color = 'var(--red)';
+                    } else {
+                        odorSpan.innerText = 'No Risk';
+                        odorSpan.style.color = 'var(--green)';
+                    }
+
+                    document.getElementById('report-confidence').innerText = data.confidence.toFixed(2);
+                    document.getElementById('report-review').innerText = data.needs_human_review ? 'Yes (Review Required)' : 'No';
+                    if (data.needs_human_review) {
+                        document.getElementById('report-review').style.color = 'var(--yellow)';
+                    } else {
+                        document.getElementById('report-review').style.color = 'var(--green)';
+                    }
+
+                    // Comment AI updates
+                    const compAnalysis = data.comment_analysis;
+                    const consistencySpan = document.getElementById('comment-consistency');
+                    const urgencySpan = document.getElementById('comment-urgency');
+                    const reasonP = document.getElementById('comment-reason');
+                    
+                    const damageDetectedSpan = document.getElementById('comment-damage-detected');
+                    const damageTypeSpan = document.getElementById('comment-damage-type');
+                    const damageSeveritySpan = document.getElementById('comment-damage-severity');
+                    const lidStatusSpan = document.getElementById('comment-lid-status');
+
+                    if (compAnalysis) {
+                        consistencySpan.innerText = compAnalysis.consistency ? 'Consistent (Uyğundur)' : 'Inconsistent (Ziddiyyətlidir)';
+                        consistencySpan.style.color = compAnalysis.consistency ? 'var(--green)' : 'var(--red)';
+                        
+                        urgencySpan.innerText = compAnalysis.text_urgency_score;
+                        if (compAnalysis.text_urgency_score <= 20) {
+                            urgencySpan.style.color = 'var(--green)';
+                        } else if (compAnalysis.text_urgency_score <= 70) {
+                            urgencySpan.style.color = 'var(--yellow)';
+                        } else {
+                            urgencySpan.style.color = 'var(--red)';
+                        }
+                        
+                        reasonP.innerText = compAnalysis.reason;
+
+                        if (compAnalysis.damage_detected) {
+                            damageDetectedSpan.innerText = 'Yes (Zədəlidir)';
+                            damageDetectedSpan.style.color = 'var(--red)';
+                            damageTypeSpan.innerText = compAnalysis.damage_type || 'General Damage';
+                            damageTypeSpan.style.color = '#fff';
+                            damageSeveritySpan.innerText = compAnalysis.damage_severity || 'MEDIUM';
+                            if (compAnalysis.damage_severity === 'LOW') {
+                                damageSeveritySpan.style.color = 'var(--green)';
+                            } else if (compAnalysis.damage_severity === 'MEDIUM') {
+                                damageSeveritySpan.style.color = 'var(--yellow)';
+                            } else {
+                                damageSeveritySpan.style.color = 'var(--red)';
+                            }
+                        } else {
+                            damageDetectedSpan.innerText = 'No (Zədəsiz)';
+                            damageDetectedSpan.style.color = 'var(--green)';
+                            damageTypeSpan.innerText = 'None';
+                            damageTypeSpan.style.color = 'var(--text-muted)';
+                            damageSeveritySpan.innerText = 'None';
+                            damageSeveritySpan.style.color = 'var(--text-muted)';
+                        }
+
+                        if (compAnalysis.container_closed) {
+                            lidStatusSpan.innerText = 'Closed (Bağlıdır)';
+                            lidStatusSpan.style.color = 'var(--yellow)';
+                        } else {
+                            lidStatusSpan.innerText = 'Open (Açıqdır)';
+                            lidStatusSpan.style.color = 'var(--green)';
+                        }
+                    } else {
+                        consistencySpan.innerText = '—';
+                        consistencySpan.style.color = 'var(--text-muted)';
+                        urgencySpan.innerText = '—';
+                        urgencySpan.style.color = 'var(--text-muted)';
+                        reasonP.innerText = 'No comment analyzed.';
+                        
+                        damageDetectedSpan.innerText = '—';
+                        damageDetectedSpan.style.color = 'var(--text-muted)';
+                        damageTypeSpan.innerText = '—';
+                        damageTypeSpan.style.color = 'var(--text-muted)';
+                        damageSeveritySpan.innerText = '—';
+                        damageSeveritySpan.style.color = 'var(--text-muted)';
+                        lidStatusSpan.innerText = '—';
+                        lidStatusSpan.style.color = 'var(--text-muted)';
+                    }
+                } else {
+                    document.getElementById('report-fullness').innerText = 'Err';
+                    document.getElementById('report-gauge').style.background = 'conic-gradient(var(--red) 100%, transparent 100%)';
+                }
+            } catch (err) {
+                rawOutput.innerText = 'Network error: ' + err.message;
+            }
+        }
+
+        // Submit Complaint
+        async function submitComplaint(e) {
+            e.preventDefault();
+            const containerId = document.getElementById('comp-container').value;
+            const type = document.getElementById('comp-type').value;
+            const citizen = document.getElementById('comp-citizen').value;
+            const device = document.getElementById('comp-device').value;
+            const desc = document.getElementById('comp-desc').value;
+            const photo = document.getElementById('comp-photo').checked;
+            const rawOutput = document.getElementById('comp-raw');
+
+            rawOutput.innerText = 'Submitting citizen report validation...';
+
+            try {
+                const response = await fetch(`/api/v1/containers/${containerId}/complaints`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Session-ID': 'session-web-' + Math.random().toString(36).substring(3, 9),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        report_type: type,
+                        citizen_id: citizen,
+                        device_fingerprint: device,
+                        description: desc,
+                        photo_evidence_present: photo,
+                        photo_evidence_hash: photo ? 'sha256-dummy-hash-1' : null
+                    })
+                });
+
+                const data = await response.json();
+                rawOutput.innerText = JSON.stringify(data, null, 2);
+
+                if (response.ok) {
+                    const statusBadge = document.getElementById('comp-status');
+                    statusBadge.innerText = data.status;
+                    statusBadge.className = 'badge ' + (data.status === 'VERIFIED' ? 'badge-green' : data.status === 'PENDING' ? 'badge-yellow' : 'badge-red');
+
+                    document.getElementById('comp-trigger').innerText = data.trigger_rule || '—';
+                    
+                    const spamSpan = document.getElementById('comp-spam');
+                    if (data.spam_flags && data.spam_flags.length > 0) {
+                        spamSpan.innerText = data.spam_flags.join(', ');
+                        spamSpan.style.color = 'var(--red)';
+                    } else {
+                        spamSpan.innerText = 'None';
+                        spamSpan.style.color = 'var(--green)';
+                    }
+
+                    document.getElementById('comp-message').innerText = data.citizen_message || 'Held silently. No notification sent to citizen.';
+                }
+            } catch (err) {
+                rawOutput.innerText = 'Network error: ' + err.message;
+            }
+        }
+
+        // Generate Worker Token (Local HS256 Dev Helper)
+        function generateWorkerToken() {
+            const role = document.getElementById('worker-role').value;
+            const tokenBox = document.getElementById('worker-token');
+
+            if (role === 'CITIZEN') {
+                tokenBox.value = '';
+                return;
+            }
+
+            fetch(`/api/v1/dev/token?role=${role}`)
+                .then(r => r.json())
+                .then(data => {
+                    tokenBox.value = data.token;
+                })
+                .catch(() => {
+                    tokenBox.value = "Failed to fetch JWT. Ensure server is running.";
+                });
+        }
+
+        // Set quick coordinates for radius checking
+        function setQuickCoordinates(lat, lon, label) {
+            document.getElementById('gps-lat').value = lat;
+            document.getElementById('gps-lon').value = lon;
+            console.log("Set coordinates to: " + label);
+        }
+
+        // Perform worker action
+        async function workerAction(action) {
+            const containerId = document.getElementById('report-container').value; // reuse container dropdown
+            const token = document.getElementById('worker-token').value;
+            const lat = parseFloat(document.getElementById('gps-lat').value);
+            const lon = parseFloat(document.getElementById('gps-lon').value);
+            const rawOutput = document.getElementById('worker-raw');
+
+            rawOutput.innerText = `Executing worker action: ${action}...`;
+
+            let url = `/api/v1/worker/containers/${containerId}/mark-cleaned`;
+            let body = {
+                vehicle_id: "NRM-FLEET-01",
+                gps_coordinates_at_action: { lat, lon }
+            };
+
+            if (action === 'structural-damage') {
+                url = `/api/v1/worker/containers/${containerId}/structural-damage`;
+                body = {
+                    vehicle_id: "NRM-FLEET-01",
+                    gps_coordinates_at_action: { lat, lon },
+                    damage_type: "CRACKED_LID",
+                    severity: "HIGH"
+                };
+            } else if (action === 'safety-hazard') {
+                url = `/api/v1/worker/containers/${containerId}/safety-hazard`;
+                body = {
+                    vehicle_id: "NRM-FLEET-01",
+                    gps_coordinates_at_action: { lat, lon },
+                    hazard_type: "BIOHAZARD",
+                    severity: "CRITICAL"
+                };
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'X-Session-ID': 'session-web-' + Math.random().toString(36).substring(3, 9),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+                rawOutput.innerText = JSON.stringify(data, null, 2);
+            } catch (err) {
+                rawOutput.innerText = 'Error: ' + err.message;
+            }
+        }
+
+        // Fetch task history
+        async function fetchTaskHistory() {
+            const token = document.getElementById('worker-token').value;
+            const rawOutput = document.getElementById('worker-raw');
+
+            rawOutput.innerText = 'Fetching task history...';
+
+            try {
+                const response = await fetch('/api/v1/worker/task-history?limit=30', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                rawOutput.innerText = JSON.stringify(data, null, 2);
+            } catch (err) {
+                rawOutput.innerText = 'Error: ' + err.message;
+            }
+        }
+
+        // Fetch Forecast
+        async function fetchForecast() {
+            const containerId = document.getElementById('fore-container').value;
+            const rawOutput = document.getElementById('fore-raw');
+
+            rawOutput.innerText = 'Fetching Prophet forecast metrics...';
+
+            try {
+                const response = await fetch(`/api/v1/containers/${containerId}/forecast`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Session-ID': 'session-web-' + Math.random().toString(36).substring(3, 9)
+                    }
+                });
+
+                const data = await response.json();
+                rawOutput.innerText = JSON.stringify(data, null, 2);
+
+                if (response.ok) {
+                    document.getElementById('fore-hours').innerText = data.hours_to_red.toFixed(1) + ' hours';
+                    
+                    const actionBadge = document.getElementById('fore-action');
+                    actionBadge.innerText = data.dispatch_action;
+                    actionBadge.className = 'badge ' + (data.dispatch_action === 'URGENT_OVERRIDE' ? 'badge-red' : data.dispatch_action === 'SCHEDULE_NEXT_BATCH' ? 'badge-yellow' : 'badge-green');
+
+                    document.getElementById('fore-confidence').innerText = (data.confidence_score * 100).toFixed(0) + '%';
+                    document.getElementById('fore-factor').innerText = data.input_summary.dominant_factor;
+
+                    document.getElementById('fore-msg-az').innerText = data.citizen_messages.azerbaijani;
+                    document.getElementById('fore-msg-en').innerText = data.citizen_messages.english;
+                }
+            } catch (err) {
+                rawOutput.innerText = 'Error: ' + err.message;
+            }
+        }
+
+        // Submit Route Optimization
+        async function submitOptimize(e) {
+            e.preventDefault();
+            const trigger = document.getElementById('opt-trigger').value;
+            const traffic = parseFloat(document.getElementById('opt-traffic').value);
+            const customTxt = document.getElementById('opt-custom-containers').value;
+            const rawOutput = document.getElementById('opt-raw');
+
+            rawOutput.innerText = 'Running Clarke-Wright savings clustering route optimizer...';
+
+            let containers = null;
+            if (customTxt.trim()) {
+                try {
+                    containers = JSON.parse(customTxt);
+                } catch (err) {
+                    alert('Invalid JSON in custom containers box: ' + err.message);
+                    return;
+                }
+            }
+
+            try {
+                const response = await fetch('/api/v1/routes/optimize', {
+                    method: 'POST',
+                    headers: {
+                        'X-Operator-ID': 'supervisor-demo-1',
+                        'X-Session-ID': 'session-web-' + Math.random().toString(36).substring(3, 9),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        trigger,
+                        traffic_multiplier: traffic,
+                        containers_needing_service: containers
+                    })
+                });
+
+                const data = await response.json();
+                rawOutput.innerText = JSON.stringify(data, null, 2);
+
+                if (response.ok) {
+                    document.getElementById('opt-vehicles').innerText = data.vehicles_assigned + ' Vehicle(s) assigned';
+                    document.getElementById('opt-reasoning').innerText = data.minimum_vehicle_recommendation.reasoning;
+                }
+            } catch (err) {
+                rawOutput.innerText = 'Error: ' + err.message;
+            }
+        }
+
+        // Fetch Audit Ledger
+        async function fetchAuditLedger() {
+            const listContainer = document.getElementById('ledger-list');
+            listContainer.innerHTML = '<p style="color: var(--text-muted); font-style: italic;">Fetching chain ledger rows...</p>';
+
+            try {
+                const response = await fetch('/api/v1/dev/ledger', {
+                    method: 'GET'
+                });
+
+                const data = await response.json();
+                listContainer.innerHTML = '';
+
+                if (data.ledger && data.ledger.length > 0) {
+                    data.ledger.forEach(row => {
+                        const div = document.createElement('div');
+                        div.className = 'ledger-row';
+                        div.innerHTML = `
+                            <div class="ledger-meta">
+                                <span style="font-weight: 700; color: #fff;">[${row.module}] ${row.action}</span>
+                                <span>${row.timestamp_utc}</span>
+                            </div>
+                            <div class="ledger-payload">
+                                ${row.output_summary}
+                            </div>
+                            <div class="ledger-hashes">
+                                Prev: <span>${row.previous_row_hash.substring(0, 16)}...</span> | 
+                                Row: <span>${row.row_hash.substring(0, 16)}...</span>
+                            </div>
+                        `;
+                        listContainer.appendChild(div);
+                    });
+                } else {
+                    listContainer.innerHTML = '<p style="color: var(--text-muted); font-style: italic;">No audit ledger entries found in the database. Perform some actions first.</p>';
+                }
+            } catch (err) {
+                listContainer.innerHTML = `<p style="color: var(--red); font-weight: 600;">Failed to fetch ledger rows: ${err.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

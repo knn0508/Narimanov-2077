@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="az">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI 2 - Şikayət Analizi</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #111b2f;
+      --text: #e6eefc;
+      --muted: #a8b3cf;
+      --border: rgba(255,255,255,0.10);
+      --accent: #5b8cff;
+      --danger: #ff5b6e;
+      --ok: #3ddc97;
+    }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 20% 0%, rgba(91,140,255,0.18), transparent 60%),
+                  radial-gradient(900px 500px at 80% 20%, rgba(61,220,151,0.12), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 920px;
+      margin: 28px auto;
+      padding: 0 16px;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0 0 14px;
+      letter-spacing: 0.2px;
+    }
+    .sub {
+      color: var(--muted);
+      margin: 0 0 22px;
+      line-height: 1.5;
+      font-size: 13.5px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media (min-width: 900px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+      .span2 { grid-column: span 2; }
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      backdrop-filter: blur(8px);
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    textarea, input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 12px;
+      color: var(--text);
+      outline: none;
+      resize: vertical;
+      min-height: 120px;
+    }
+    textarea.code {
+      min-height: 170px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    button {
+      background: linear-gradient(180deg, rgba(91,140,255,0.95), rgba(91,140,255,0.72));
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #061022;
+      font-weight: 700;
+      padding: 11px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.05s ease, filter 0.2s ease;
+    }
+    button:active { transform: translateY(1px); }
+    button:disabled { filter: grayscale(0.7); cursor: not-allowed; opacity: 0.75; }
+    .hint {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.4;
+      margin-left: auto;
+    }
+    .result {
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12.5px;
+      line-height: 1.45;
+      background: rgba(0,0,0,0.22);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 110px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.18);
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <h1>AI 2 — Narimanov: Şikayət Analizi</h1>
+    <p class="sub">
+      Bu səhifə <b>/analyze-complaint</b> endpointinə şikayət mətnini (Azərbaycan dilində) və mock <b>ai1_vision_data</b> göndərir,
+      cavabı isə JSON formatında göstərir.
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <label for="userDescription">Şikayət mətni (AZ)</label>
+        <textarea id="userDescription" placeholder="Məs: Zibil qabı çox pis iylənir, ətrafı da zibildir..."></textarea>
+      </div>
+
+      <div class="card">
+        <label for="visionData">Mock ai1_vision_data (JSON)</label>
+        <textarea id="visionData" class="code">{
+  "fill_level": 80,
+  "organic_detected": true,
+  "spill_detected": false
+}</textarea>
+      </div>
+
+      <div class="card span2">
+        <div class="row">
+          <button id="submitBtn">Submit</button>
+          <div class="hint">
+            Endpoint: <span class="pill"><span class="dot"></span> /analyze-complaint</span>
+          </div>
+        </div>
+        <div style="height: 12px;"></div>
+        <div id="status" class="result">Cavab burada görünəcək...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const submitBtn = document.getElementById('submitBtn');
+    const userDescriptionEl = document.getElementById('userDescription');
+    const visionDataEl = document.getElementById('visionData');
+    const statusEl = document.getElementById('status');
+
+    function safePrettyJson(obj) {
+      try { return JSON.stringify(obj, null, 2); } catch (e) { return String(obj); }
+    }
+
+    function setStatus(text, isError = false) {
+      statusEl.textContent = text;
+      statusEl.style.borderColor = isError ? 'rgba(255,91,110,0.65)' : 'rgba(255,255,255,0.12)';
+    }
+
+    async function onSubmit() {
+      const user_description = userDescriptionEl.value.trim();
+      const visionRaw = visionDataEl.value.trim();
+
+      if (!user_description) {
+        setStatus('Xəta: user_description boş ola bilməz.', true);
+        return;
+      }
+
+      let ai1_vision_data;
+      try {
+        ai1_vision_data = JSON.parse(visionRaw);
+      } catch (e) {
+        setStatus('Xəta: ai1_vision_data JSON formatı düzgün deyil.\n' + e.message, true);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      setStatus('Göndərilir...');
+
+      const API_BASE = 'http://127.0.0.1:8000';
+
+      try {
+        const res = await fetch(API_BASE + '/analyze-complaint', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_description, ai1_vision_data })
+        });
+
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } catch (_) { data = { raw: text }; }
+
+        if (!res.ok) {
+          setStatus('API Xəta:\n' + safePrettyJson({ status: res.status, data }), true);
+          return;
+        }
+
+        // Expected keys: consistency (boolean), reason (string), text_urgency_score (int)
+        setStatus(safePrettyJson(data));
+      } catch (err) {
+          // Common reasons: backend not running, CORS not allowed, page opened with file:// origin.
+          setStatus('Şəbəkə xətası:\n' + (err?.message || String(err)) + '\n\nMümkün səbəblər:\n- Backend (uvicorn) işləməyir. `python -m uvicorn main:app --reload` ilə işə salın.\n- Səhifəni fayl kimi (`file://`) açmısınız: brauzer bu halda xarici istəkləri bloklaya bilər — `python -m http.server` və ya Live Server istifadə edin.\n- CORS icazəsi yox (serverdə allow_origins tənzimləyin).', true);
+      } finally {
+        submitBtn.disabled = false;
+      }
+    }
+
+    submitBtn.addEventListener('click', onSubmit);
+    userDescriptionEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) onSubmit();
+    });
+  </script>
+</body>
+</html>

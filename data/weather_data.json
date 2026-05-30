@@ -1,0 +1,23 @@
+[
+  {
+    "district_zone": "Narimanov-Residential-North",
+    "rain_mm_last_24h": 1.8,
+    "rain_mm_next_24h": 0.5,
+    "humidity_percent": 68,
+    "source": "local_seed"
+  },
+  {
+    "district_zone": "Narimanov-Metro-Corridor",
+    "rain_mm_last_24h": 0.7,
+    "rain_mm_next_24h": 0.2,
+    "humidity_percent": 63,
+    "source": "local_seed"
+  },
+  {
+    "district_zone": "Narimanov-Business-East",
+    "rain_mm_last_24h": 1.2,
+    "rain_mm_next_24h": 0.8,
+    "humidity_percent": 70,
+    "source": "local_seed"
+  }
+]

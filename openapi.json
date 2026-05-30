@@ -1,0 +1,2421 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SmartWave AI Engine",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/containers/{container_id}/report": {
+      "post": {
+        "summary": "Submit Container Report",
+        "operationId": "submit_container_report_api_v1_containers__container_id__report_post",
+        "parameters": [
+          {
+            "name": "container_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Container Id"
+            }
+          },
+          {
+            "name": "comment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Comment"
+            }
+          },
+          {
+            "name": "X-QR-Code-UUID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Qr-Code-Uuid"
+            }
+          },
+          {
+            "name": "X-Session-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Session-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisualAnalysisResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/containers/{container_id}/panel-route": {
+      "get": {
+        "summary": "Detect Panel Route",
+        "operationId": "detect_panel_route_api_v1_containers__container_id__panel_route_get",
+        "parameters": [
+          {
+            "name": "container_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Container Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionRouteResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/worker/containers/{container_id}/mark-cleaned": {
+      "post": {
+        "summary": "Mark Container Cleaned",
+        "operationId": "mark_container_cleaned_api_v1_worker_containers__container_id__mark_cleaned_post",
+        "parameters": [
+          {
+            "name": "container_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Container Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Session-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Session-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarkCleanedRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkerActionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/worker/containers/{container_id}/structural-damage": {
+      "post": {
+        "summary": "Report Worker Structural Damage",
+        "operationId": "report_worker_structural_damage_api_v1_worker_containers__container_id__structural_damage_post",
+        "parameters": [
+          {
+            "name": "container_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Container Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Session-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Session-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StructuralDamageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkerActionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/worker/containers/{container_id}/safety-hazard": {
+      "post": {
+        "summary": "Report Worker Safety Hazard",
+        "operationId": "report_worker_safety_hazard_api_v1_worker_containers__container_id__safety_hazard_post",
+        "parameters": [
+          {
+            "name": "container_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Container Id"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Session-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Session-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SafetyHazardRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkerActionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/worker/task-history": {
+      "get": {
+        "summary": "Worker Task History",
+        "operationId": "worker_task_history_api_v1_worker_task_history_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 30,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkerTaskHistoryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/containers/{container_id}/forecast": {
+      "get": {
+        "summary": "Forecast Container Red Status",
+        "operationId": "forecast_container_red_status_api_v1_containers__container_id__forecast_get",
+        "parameters": [
+          {
+            "name": "container_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Container Id"
+            }
+          },
+          {
+            "name": "X-Session-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Session-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContainerForecastResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/routes/optimize": {
+      "post": {
+        "summary": "Optimize Fleet Routes",
+        "operationId": "optimize_fleet_routes_api_v1_routes_optimize_post",
+        "parameters": [
+          {
+            "name": "X-Session-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Session-Id"
+            }
+          },
+          {
+            "name": "X-Operator-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Operator-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RouteOptimizationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RouteManifest"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/containers/{container_id}/complaints": {
+      "post": {
+        "summary": "Submit Citizen Complaint",
+        "operationId": "submit_citizen_complaint_api_v1_containers__container_id__complaints_post",
+        "parameters": [
+          {
+            "name": "container_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Container Id"
+            }
+          },
+          {
+            "name": "X-Session-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Session-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CitizenComplaintRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationDecision"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/incidents/{report_id}/worker-confirmation": {
+      "post": {
+        "summary": "Confirm Incident By Worker",
+        "operationId": "confirm_incident_by_worker_api_v1_incidents__report_id__worker_confirmation_post",
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Report Id"
+            }
+          },
+          {
+            "name": "X-Session-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Session-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkerConfirmationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationDecision"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Serve Dashboard",
+        "operationId": "serve_dashboard__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dev/token": {
+      "get": {
+        "summary": "Get Dev Token",
+        "operationId": "get_dev_token_api_v1_dev_token_get",
+        "parameters": [
+          {
+            "name": "role",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "WORKER",
+              "title": "Role"
+            }
+          },
+          {
+            "name": "subject",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "worker-1",
+              "title": "Subject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dev/ledger": {
+      "get": {
+        "summary": "Get Dev Ledger",
+        "operationId": "get_dev_ledger_api_v1_dev_ledger_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BoundingBox": {
+        "properties": {
+          "x_min": {
+            "type": "number",
+            "title": "X Min"
+          },
+          "y_min": {
+            "type": "number",
+            "title": "Y Min"
+          },
+          "x_max": {
+            "type": "number",
+            "title": "X Max"
+          },
+          "y_max": {
+            "type": "number",
+            "title": "Y Max"
+          }
+        },
+        "type": "object",
+        "required": [
+          "x_min",
+          "y_min",
+          "x_max",
+          "y_max"
+        ],
+        "title": "BoundingBox"
+      },
+      "CitizenComplaintRequest": {
+        "properties": {
+          "report_type": {
+            "$ref": "#/components/schemas/ReportType"
+          },
+          "citizen_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Citizen Id"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "photo_evidence_present": {
+            "type": "boolean",
+            "title": "Photo Evidence Present",
+            "default": false
+          },
+          "photo_evidence_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Evidence Hash"
+          },
+          "device_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Fingerprint"
+          },
+          "observed_at_utc": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observed At Utc"
+          }
+        },
+        "type": "object",
+        "required": [
+          "report_type",
+          "citizen_id"
+        ],
+        "title": "CitizenComplaintRequest"
+      },
+      "CitizenForecastMessages": {
+        "properties": {
+          "english": {
+            "type": "string",
+            "title": "English"
+          },
+          "azerbaijani": {
+            "type": "string",
+            "title": "Azerbaijani"
+          }
+        },
+        "type": "object",
+        "required": [
+          "english",
+          "azerbaijani"
+        ],
+        "title": "CitizenForecastMessages"
+      },
+      "CommentAnalysisResult": {
+        "properties": {
+          "consistency": {
+            "type": "boolean",
+            "title": "Consistency"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "text_urgency_score": {
+            "type": "integer",
+            "title": "Text Urgency Score"
+          },
+          "damage_detected": {
+            "type": "boolean",
+            "title": "Damage Detected",
+            "default": false
+          },
+          "damage_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Damage Type"
+          },
+          "damage_severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Damage Severity"
+          },
+          "container_closed": {
+            "type": "boolean",
+            "title": "Container Closed",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "consistency",
+          "reason",
+          "text_urgency_score"
+        ],
+        "title": "CommentAnalysisResult"
+      },
+      "ContainerForecastResponse": {
+        "properties": {
+          "container_id": {
+            "type": "string",
+            "title": "Container Id"
+          },
+          "generated_at_utc": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At Utc"
+          },
+          "current_fullness_score": {
+            "type": "integer",
+            "title": "Current Fullness Score"
+          },
+          "predicted_red_at_utc": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Predicted Red At Utc"
+          },
+          "hours_to_red": {
+            "type": "number",
+            "title": "Hours To Red"
+          },
+          "confidence_interval_80": {
+            "$ref": "#/components/schemas/ForecastInterval"
+          },
+          "confidence_score": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence Score"
+          },
+          "dispatch_action": {
+            "$ref": "#/components/schemas/DispatchAction"
+          },
+          "route_reoptimization_required": {
+            "type": "boolean",
+            "title": "Route Reoptimization Required"
+          },
+          "citizen_messages": {
+            "$ref": "#/components/schemas/CitizenForecastMessages"
+          },
+          "input_summary": {
+            "$ref": "#/components/schemas/ForecastInputSummary"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "model_components": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Model Components"
+          },
+          "audit_entry_id": {
+            "type": "string",
+            "title": "Audit Entry Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "container_id",
+          "generated_at_utc",
+          "current_fullness_score",
+          "predicted_red_at_utc",
+          "hours_to_red",
+          "confidence_interval_80",
+          "confidence_score",
+          "dispatch_action",
+          "route_reoptimization_required",
+          "citizen_messages",
+          "input_summary",
+          "model_version",
+          "model_components",
+          "audit_entry_id"
+        ],
+        "title": "ContainerForecastResponse"
+      },
+      "ContainerMaintenanceState": {
+        "type": "string",
+        "enum": [
+          "ACTIVE",
+          "MAINTENANCE_REQUIRED",
+          "OUT_OF_SERVICE"
+        ],
+        "title": "ContainerMaintenanceState"
+      },
+      "DamageType": {
+        "type": "string",
+        "enum": [
+          "CRACKED_LID",
+          "BROKEN_WHEELS",
+          "GRAFFITI",
+          "FIRE_DAMAGE",
+          "OTHER"
+        ],
+        "title": "DamageType"
+      },
+      "DispatchAction": {
+        "type": "string",
+        "enum": [
+          "NONE",
+          "SCHEDULE_NEXT_BATCH",
+          "URGENT_OVERRIDE"
+        ],
+        "title": "DispatchAction"
+      },
+      "ForecastInputSummary": {
+        "properties": {
+          "history_points_used": {
+            "type": "integer",
+            "title": "History Points Used"
+          },
+          "current_fullness_score": {
+            "type": "integer",
+            "title": "Current Fullness Score"
+          },
+          "baseline_hourly_fill_rate": {
+            "type": "number",
+            "title": "Baseline Hourly Fill Rate"
+          },
+          "adjusted_hourly_fill_rate": {
+            "type": "number",
+            "title": "Adjusted Hourly Fill Rate"
+          },
+          "calendar_multiplier": {
+            "type": "number",
+            "title": "Calendar Multiplier"
+          },
+          "weather_multiplier": {
+            "type": "number",
+            "title": "Weather Multiplier"
+          },
+          "zone_multiplier": {
+            "type": "number",
+            "title": "Zone Multiplier"
+          },
+          "dominant_factor": {
+            "type": "string",
+            "title": "Dominant Factor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "history_points_used",
+          "current_fullness_score",
+          "baseline_hourly_fill_rate",
+          "adjusted_hourly_fill_rate",
+          "calendar_multiplier",
+          "weather_multiplier",
+          "zone_multiplier",
+          "dominant_factor"
+        ],
+        "title": "ForecastInputSummary"
+      },
+      "ForecastInterval": {
+        "properties": {
+          "lower_hours_to_red": {
+            "type": "number",
+            "title": "Lower Hours To Red"
+          },
+          "median_hours_to_red": {
+            "type": "number",
+            "title": "Median Hours To Red"
+          },
+          "upper_hours_to_red": {
+            "type": "number",
+            "title": "Upper Hours To Red"
+          },
+          "lower_predicted_at_utc": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Lower Predicted At Utc"
+          },
+          "median_predicted_at_utc": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Median Predicted At Utc"
+          },
+          "upper_predicted_at_utc": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Upper Predicted At Utc"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lower_hours_to_red",
+          "median_hours_to_red",
+          "upper_hours_to_red",
+          "lower_predicted_at_utc",
+          "median_predicted_at_utc",
+          "upper_predicted_at_utc"
+        ],
+        "title": "ForecastInterval"
+      },
+      "GeoJsonLineString": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "default": "LineString"
+          },
+          "coordinates": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Coordinates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "coordinates"
+        ],
+        "title": "GeoJsonLineString"
+      },
+      "GeoPoint": {
+        "properties": {
+          "lat": {
+            "type": "number",
+            "title": "Lat"
+          },
+          "lon": {
+            "type": "number",
+            "title": "Lon"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "GeoPoint"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HazardType": {
+        "type": "string",
+        "enum": [
+          "SHARP_OBJECTS",
+          "BIOHAZARD",
+          "DANGEROUS_CHEMICALS",
+          "OTHER"
+        ],
+        "title": "HazardType"
+      },
+      "IncidentStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "VERIFIED",
+          "HELD_FOR_REVIEW",
+          "RESOLVED"
+        ],
+        "title": "IncidentStatus"
+      },
+      "MarkCleanedRequest": {
+        "properties": {
+          "vehicle_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Vehicle Id"
+          },
+          "gps_coordinates_at_action": {
+            "$ref": "#/components/schemas/GeoPoint"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vehicle_id",
+          "gps_coordinates_at_action"
+        ],
+        "title": "MarkCleanedRequest"
+      },
+      "MinimumVehicleRecommendation": {
+        "properties": {
+          "recommended_vehicles": {
+            "type": "integer",
+            "title": "Recommended Vehicles"
+          },
+          "total_volume_m3": {
+            "type": "number",
+            "title": "Total Volume M3"
+          },
+          "average_vehicle_capacity_m3": {
+            "type": "number",
+            "title": "Average Vehicle Capacity M3"
+          },
+          "reasoning": {
+            "type": "string",
+            "title": "Reasoning"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recommended_vehicles",
+          "total_volume_m3",
+          "average_vehicle_capacity_m3",
+          "reasoning"
+        ],
+        "title": "MinimumVehicleRecommendation"
+      },
+      "OperationsEvent": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "title": "Event Type",
+            "default": "VERIFIED_INCIDENT"
+          },
+          "container_id": {
+            "type": "string",
+            "title": "Container Id"
+          },
+          "report_type": {
+            "$ref": "#/components/schemas/ReportType"
+          },
+          "report_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Report Ids"
+          },
+          "route_reoptimization_required": {
+            "type": "boolean",
+            "title": "Route Reoptimization Required"
+          },
+          "eta": {
+            "type": "string",
+            "title": "Eta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "container_id",
+          "report_type",
+          "report_ids",
+          "route_reoptimization_required",
+          "eta"
+        ],
+        "title": "OperationsEvent"
+      },
+      "OptimizationTrigger": {
+        "type": "string",
+        "enum": [
+          "scheduled",
+          "event_driven",
+          "manual"
+        ],
+        "title": "OptimizationTrigger"
+      },
+      "PanelRoute": {
+        "type": "string",
+        "enum": [
+          "CITIZEN_FORM",
+          "WORKER_PANEL",
+          "SUPERVISOR_DASHBOARD"
+        ],
+        "title": "PanelRoute"
+      },
+      "ReportType": {
+        "type": "string",
+        "enum": [
+          "ODOR_COMPLAINT",
+          "STRUCTURAL_DAMAGE",
+          "PEST_INFESTATION",
+          "FIRE_HAZARD",
+          "ILLEGAL_DUMPING",
+          "CONTAINER_MISSING"
+        ],
+        "title": "ReportType"
+      },
+      "RouteContainer": {
+        "properties": {
+          "container_id": {
+            "type": "string",
+            "title": "Container Id"
+          },
+          "urgency_score": {
+            "type": "number",
+            "title": "Urgency Score"
+          },
+          "status_color": {
+            "type": "string",
+            "title": "Status Color"
+          },
+          "volume_m3": {
+            "type": "number",
+            "title": "Volume M3"
+          },
+          "coords": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "route_zone": {
+            "type": "string",
+            "title": "Route Zone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "container_id",
+          "urgency_score",
+          "status_color",
+          "volume_m3",
+          "coords",
+          "route_zone"
+        ],
+        "title": "RouteContainer"
+      },
+      "RouteManifest": {
+        "properties": {
+          "route_id": {
+            "type": "string",
+            "title": "Route Id"
+          },
+          "generated_at_utc": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At Utc"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          },
+          "vehicles_assigned": {
+            "type": "integer",
+            "title": "Vehicles Assigned"
+          },
+          "routes": {
+            "items": {
+              "$ref": "#/components/schemas/VehicleRoute"
+            },
+            "type": "array",
+            "title": "Routes"
+          },
+          "optimization_algorithm": {
+            "type": "string",
+            "title": "Optimization Algorithm"
+          },
+          "minimum_vehicle_recommendation": {
+            "$ref": "#/components/schemas/MinimumVehicleRecommendation"
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/OptimizationTrigger"
+          },
+          "audit_entry_id": {
+            "type": "string",
+            "title": "Audit Entry Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "route_id",
+          "generated_at_utc",
+          "timezone",
+          "vehicles_assigned",
+          "routes",
+          "optimization_algorithm",
+          "minimum_vehicle_recommendation",
+          "trigger",
+          "audit_entry_id"
+        ],
+        "title": "RouteManifest"
+      },
+      "RouteOptimizationRequest": {
+        "properties": {
+          "trigger": {
+            "$ref": "#/components/schemas/OptimizationTrigger",
+            "default": "manual"
+          },
+          "containers_needing_service": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ServiceContainerInput"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Containers Needing Service"
+          },
+          "available_vehicles": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/VehicleInput"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Available Vehicles"
+          },
+          "depot_location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GeoPoint"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "time_window": {
+            "$ref": "#/components/schemas/TimeWindow"
+          },
+          "traffic_multiplier": {
+            "type": "number",
+            "maximum": 3.0,
+            "minimum": 0.5,
+            "title": "Traffic Multiplier",
+            "default": 1.0
+          }
+        },
+        "type": "object",
+        "title": "RouteOptimizationRequest"
+      },
+      "SafetyHazardRequest": {
+        "properties": {
+          "vehicle_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle Id"
+          },
+          "gps_coordinates_at_action": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "hazard_type": {
+            "$ref": "#/components/schemas/HazardType"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "photo_attachment_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Attachment Hash"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "gps_coordinates_at_action",
+          "hazard_type",
+          "severity"
+        ],
+        "title": "SafetyHazardRequest"
+      },
+      "ServiceContainerInput": {
+        "properties": {
+          "container_id": {
+            "type": "string",
+            "title": "Container Id"
+          },
+          "coords": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GeoPoint"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status_color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Color"
+          },
+          "urgency_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Urgency Score"
+          },
+          "fullness_score": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fullness Score"
+          },
+          "odor_risk_flag": {
+            "type": "boolean",
+            "title": "Odor Risk Flag",
+            "default": false
+          },
+          "hours_since_last_collection": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hours Since Last Collection"
+          },
+          "validation_report_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Validation Report Count",
+            "default": 0
+          },
+          "calendar_factor_multiplier": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Calendar Factor Multiplier",
+            "default": 1.0
+          },
+          "fire_hazard_flag": {
+            "type": "boolean",
+            "title": "Fire Hazard Flag",
+            "default": false
+          },
+          "volume_m3": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume M3"
+          },
+          "route_zone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Route Zone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "container_id"
+        ],
+        "title": "ServiceContainerInput"
+      },
+      "SessionRouteResponse": {
+        "properties": {
+          "container_id": {
+            "type": "string",
+            "title": "Container Id"
+          },
+          "panel_route": {
+            "$ref": "#/components/schemas/PanelRoute"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserRole"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "authenticated": {
+            "type": "boolean",
+            "title": "Authenticated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "container_id",
+          "panel_route",
+          "authenticated"
+        ],
+        "title": "SessionRouteResponse"
+      },
+      "Severity": {
+        "type": "string",
+        "enum": [
+          "LOW",
+          "MEDIUM",
+          "HIGH",
+          "CRITICAL"
+        ],
+        "title": "Severity"
+      },
+      "StatusColor": {
+        "type": "string",
+        "enum": [
+          "GREEN",
+          "YELLOW",
+          "RED"
+        ],
+        "title": "StatusColor"
+      },
+      "StructuralDamageRequest": {
+        "properties": {
+          "vehicle_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle Id"
+          },
+          "gps_coordinates_at_action": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "damage_type": {
+            "$ref": "#/components/schemas/DamageType"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "photo_attachment_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Attachment Hash"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "gps_coordinates_at_action",
+          "damage_type",
+          "severity"
+        ],
+        "title": "StructuralDamageRequest"
+      },
+      "TacoDetection": {
+        "properties": {
+          "class_name": {
+            "type": "string",
+            "title": "Class Name"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence"
+          },
+          "bbox_xyxy": {
+            "$ref": "#/components/schemas/BoundingBox"
+          }
+        },
+        "type": "object",
+        "required": [
+          "class_name",
+          "confidence",
+          "bbox_xyxy"
+        ],
+        "title": "TacoDetection"
+      },
+      "TimeWindow": {
+        "properties": {
+          "start_local": {
+            "type": "string",
+            "title": "Start Local",
+            "default": "06:00"
+          },
+          "end_local": {
+            "type": "string",
+            "title": "End Local",
+            "default": "10:00"
+          }
+        },
+        "type": "object",
+        "title": "TimeWindow"
+      },
+      "TriggerRule": {
+        "type": "string",
+        "enum": [
+          "single_report_received",
+          "multi_report_threshold",
+          "ai_corroboration",
+          "worker_confirmation",
+          "photo_evidence",
+          "immediate_escalation",
+          "citizen_rate_limit",
+          "coordinated_spam"
+        ],
+        "title": "TriggerRule"
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": [
+          "CITIZEN",
+          "WORKER",
+          "SUPERVISOR",
+          "ADMIN"
+        ],
+        "title": "UserRole"
+      },
+      "ValidationDecision": {
+        "properties": {
+          "accepted": {
+            "type": "boolean",
+            "title": "Accepted"
+          },
+          "report_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Id"
+          },
+          "container_id": {
+            "type": "string",
+            "title": "Container Id"
+          },
+          "report_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReportType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/IncidentStatus"
+          },
+          "incident_status_message": {
+            "type": "string",
+            "title": "Incident Status Message"
+          },
+          "citizen_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Citizen Message"
+          },
+          "trigger_rule": {
+            "$ref": "#/components/schemas/TriggerRule"
+          },
+          "report_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Report Ids"
+          },
+          "operations_event": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OperationsEvent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "route_reoptimization_required": {
+            "type": "boolean",
+            "title": "Route Reoptimization Required",
+            "default": false
+          },
+          "human_review_required": {
+            "type": "boolean",
+            "title": "Human Review Required",
+            "default": false
+          },
+          "spam_flags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Spam Flags"
+          },
+          "audit_entry_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audit Entry Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accepted",
+          "container_id",
+          "status",
+          "incident_status_message",
+          "trigger_rule"
+        ],
+        "title": "ValidationDecision"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VehicleInput": {
+        "properties": {
+          "vehicle_id": {
+            "type": "string",
+            "title": "Vehicle Id"
+          },
+          "driver_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Id"
+          },
+          "capacity_m3": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Capacity M3"
+          },
+          "current_location": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "fuel_level": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Fuel Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vehicle_id",
+          "capacity_m3",
+          "current_location",
+          "fuel_level"
+        ],
+        "title": "VehicleInput"
+      },
+      "VehicleRoute": {
+        "properties": {
+          "vehicle_id": {
+            "type": "string",
+            "title": "Vehicle Id"
+          },
+          "driver_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Id"
+          },
+          "waypoints": {
+            "items": {
+              "$ref": "#/components/schemas/GeoJsonLineString"
+            },
+            "type": "array",
+            "title": "Waypoints"
+          },
+          "containers": {
+            "items": {
+              "$ref": "#/components/schemas/RouteContainer"
+            },
+            "type": "array",
+            "title": "Containers"
+          },
+          "estimated_duration_minutes": {
+            "type": "integer",
+            "title": "Estimated Duration Minutes"
+          },
+          "estimated_distance_km": {
+            "type": "number",
+            "title": "Estimated Distance Km"
+          },
+          "fuel_estimate_liters": {
+            "type": "number",
+            "title": "Fuel Estimate Liters"
+          },
+          "co2_footprint_kg": {
+            "type": "number",
+            "title": "Co2 Footprint Kg"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vehicle_id",
+          "waypoints",
+          "containers",
+          "estimated_duration_minutes",
+          "estimated_distance_km",
+          "fuel_estimate_liters",
+          "co2_footprint_kg"
+        ],
+        "title": "VehicleRoute"
+      },
+      "VisualAnalysisResponse": {
+        "properties": {
+          "container_id": {
+            "type": "string",
+            "title": "Container Id"
+          },
+          "timestamp_utc": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp Utc"
+          },
+          "fullness_score": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Fullness Score"
+          },
+          "status_color": {
+            "$ref": "#/components/schemas/StatusColor"
+          },
+          "odor_risk_flag": {
+            "type": "boolean",
+            "title": "Odor Risk Flag"
+          },
+          "taco_classes_detected": {
+            "items": {
+              "$ref": "#/components/schemas/TacoDetection"
+            },
+            "type": "array",
+            "title": "Taco Classes Detected"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence"
+          },
+          "needs_human_review": {
+            "type": "boolean",
+            "title": "Needs Human Review"
+          },
+          "image_hash_sha256": {
+            "type": "string",
+            "title": "Image Hash Sha256"
+          },
+          "ai_model_version": {
+            "type": "string",
+            "title": "Ai Model Version"
+          },
+          "audit_entry_id": {
+            "type": "string",
+            "title": "Audit Entry Id"
+          },
+          "comment_analysis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CommentAnalysisResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "damage_detected": {
+            "type": "boolean",
+            "title": "Damage Detected",
+            "default": false
+          },
+          "damage_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Damage Type"
+          },
+          "damage_severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Damage Severity"
+          },
+          "container_closed": {
+            "type": "boolean",
+            "title": "Container Closed",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "container_id",
+          "timestamp_utc",
+          "fullness_score",
+          "status_color",
+          "odor_risk_flag",
+          "taco_classes_detected",
+          "confidence",
+          "needs_human_review",
+          "image_hash_sha256",
+          "ai_model_version",
+          "audit_entry_id"
+        ],
+        "title": "VisualAnalysisResponse"
+      },
+      "WorkerActionAuditRecord": {
+        "properties": {
+          "worker_id": {
+            "type": "string",
+            "title": "Worker Id"
+          },
+          "action_type": {
+            "$ref": "#/components/schemas/WorkerActionType"
+          },
+          "container_id": {
+            "type": "string",
+            "title": "Container Id"
+          },
+          "vehicle_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle Id"
+          },
+          "gps_coordinates_at_action": {
+            "$ref": "#/components/schemas/GeoPoint"
+          },
+          "timestamp_utc": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp Utc"
+          },
+          "jwt_fingerprint": {
+            "type": "string",
+            "title": "Jwt Fingerprint"
+          },
+          "audit_entry_id": {
+            "type": "string",
+            "title": "Audit Entry Id"
+          },
+          "location_distance_meters": {
+            "type": "number",
+            "title": "Location Distance Meters"
+          },
+          "location_anomaly": {
+            "type": "boolean",
+            "title": "Location Anomaly",
+            "default": false
+          },
+          "held_for_supervisor_review": {
+            "type": "boolean",
+            "title": "Held For Supervisor Review",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "worker_id",
+          "action_type",
+          "container_id",
+          "gps_coordinates_at_action",
+          "timestamp_utc",
+          "jwt_fingerprint",
+          "audit_entry_id",
+          "location_distance_meters"
+        ],
+        "title": "WorkerActionAuditRecord"
+      },
+      "WorkerActionResponse": {
+        "properties": {
+          "accepted": {
+            "type": "boolean",
+            "title": "Accepted"
+          },
+          "action_type": {
+            "$ref": "#/components/schemas/WorkerActionType"
+          },
+          "container_id": {
+            "type": "string",
+            "title": "Container Id"
+          },
+          "worker_id": {
+            "type": "string",
+            "title": "Worker Id"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "audit_entry_id": {
+            "type": "string",
+            "title": "Audit Entry Id"
+          },
+          "location_anomaly": {
+            "type": "boolean",
+            "title": "Location Anomaly",
+            "default": false
+          },
+          "held_for_supervisor_review": {
+            "type": "boolean",
+            "title": "Held For Supervisor Review",
+            "default": false
+          },
+          "container_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ContainerMaintenanceState"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "incidents_resolved": {
+            "type": "integer",
+            "title": "Incidents Resolved",
+            "default": 0
+          },
+          "escalations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Escalations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accepted",
+          "action_type",
+          "container_id",
+          "worker_id",
+          "message",
+          "audit_entry_id"
+        ],
+        "title": "WorkerActionResponse"
+      },
+      "WorkerActionType": {
+        "type": "string",
+        "enum": [
+          "MARK_CLEANED",
+          "REPORT_STRUCTURAL_DAMAGE",
+          "REPORT_SAFETY_HAZARD"
+        ],
+        "title": "WorkerActionType"
+      },
+      "WorkerConfirmationRequest": {
+        "properties": {
+          "worker_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Worker Id"
+          },
+          "operator_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operator Id"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "worker_id"
+        ],
+        "title": "WorkerConfirmationRequest"
+      },
+      "WorkerTaskHistoryResponse": {
+        "properties": {
+          "worker_id": {
+            "type": "string",
+            "title": "Worker Id"
+          },
+          "tasks": {
+            "items": {
+              "$ref": "#/components/schemas/WorkerActionAuditRecord"
+            },
+            "type": "array",
+            "title": "Tasks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "worker_id",
+          "tasks"
+        ],
+        "title": "WorkerTaskHistoryResponse"
+      }
+    }
+  }
+}
