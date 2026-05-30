@@ -41,65 +41,6 @@ class DbContainer(Base):
     last_emptied_timestamp = Column(DateTime, nullable=False)
 
 
-class DbFillHistory(Base):
-    __tablename__ = "container_fill_history"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    container_id = Column(String(64), nullable=False, index=True)
-    timestamp_utc = Column(DateTime, nullable=False, index=True)
-    fullness_score = Column(Integer, nullable=False)
-    source = Column(String(64), nullable=False)
-    confidence = Column(Float, nullable=False)
-    audit_entry_id = Column(String(64))
-
-
-class DbIncidentReport(Base):
-    __tablename__ = "incident_reports"
-
-    report_id = Column(String(64), primary_key=True, index=True)
-    container_id = Column(String(64), nullable=False, index=True)
-    report_type = Column(String(64), nullable=False)
-    citizen_id_hash = Column(String(64))
-    device_fingerprint_hash = Column(String(64))
-    status = Column(String(64), nullable=False)
-    created_at_utc = Column(DateTime, nullable=False)
-    observed_at_utc = Column(DateTime, nullable=False)
-    description = Column(String(1024))
-    photo_evidence_present = Column(Boolean, default=False)
-    photo_evidence_hash = Column(String(64))
-    human_review_required = Column(Boolean, default=False)
-    spam_flags = Column(JSON, default=list)
-    worker_confirmed = Column(Boolean, default=False)
-
-
-class DbCollectionLog(Base):
-    __tablename__ = "collection_log"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    container_id = Column(String(64), nullable=False, index=True)
-    cleaned_at_utc = Column(DateTime, nullable=False, index=True)
-    worker_id = Column(String(64), nullable=False)
-    fullness_after_collection = Column(Integer, default=0)
-
-
-class DbWorkerAction(Base):
-    __tablename__ = "worker_actions"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    worker_id = Column(String(64), nullable=False, index=True)
-    action_type = Column(String(64), nullable=False)
-    container_id = Column(String(64), nullable=False, index=True)
-    vehicle_id = Column(String(64))
-    lat = Column(Float, nullable=False)
-    lon = Column(Float, nullable=False)
-    timestamp_utc = Column(DateTime, nullable=False, index=True)
-    jwt_fingerprint = Column(String(64), nullable=False)
-    audit_entry_id = Column(String(64), nullable=False)
-    location_distance_meters = Column(Float, nullable=False)
-    location_anomaly = Column(Boolean, default=False)
-    held_for_supervisor_review = Column(Boolean, default=False)
-
-
 class DbAuditLedger(Base):
     __tablename__ = "audit_ledger"
 
@@ -119,13 +60,6 @@ class DbAuditLedger(Base):
     previous_row_hash = Column(String(64), nullable=False)
     row_hash = Column(String(64), nullable=False, unique=True)
 
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 def seed_database_if_empty(db) -> None:
@@ -160,28 +94,7 @@ def initialize_db() -> None:
     # Create tables
     Base.metadata.create_all(engine)
     
-    # Try TimescaleDB hypertable conversion if PostgreSQL dialect is used
-    if engine.dialect.name == "postgresql":
-        db = SessionLocal()
-        try:
-            # Check if timescaledb extension is active, then create hypertable
-            db.execute("CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;")
-            db.execute(
-                """
-                SELECT create_hypertable(
-                    'container_fill_history', 
-                    'timestamp_utc', 
-                    if_not_exists => TRUE
-                );
-                """
-            )
-            db.commit()
-            print("TimescaleDB hypertable verified/created successfully.")
-        except Exception as e:
-            db.rollback()
-            print(f"PostgreSQL TimescaleDB check/setup failed (could be mock/permission): {e}")
-        finally:
-            db.close()
+
 
     # Seed registry
     db = SessionLocal()
