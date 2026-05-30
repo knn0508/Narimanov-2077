@@ -12,8 +12,9 @@ from smartwave_ai.visual_analysis.audit import (
 from smartwave_ai.visual_analysis.config import (
     AI_MODEL_VERSION,
     MIN_AI_CONFIDENCE,
-    ORGANIC_CLASS_ALIASES,
-    ORGANIC_TACO_CLASSES,
+    MIXED_CLASS_ALIASES,
+    PLASTIC_CLASS_ALIASES,
+    TRASH_CLASSES,
 )
 from smartwave_ai.visual_analysis.geometry import clamp_ratio, compute_fullness_score
 from smartwave_ai.visual_analysis.inference import VisionDetection, VisionModel
@@ -57,6 +58,10 @@ def assign_status_color(fullness_score: int) -> StatusColor:
     return StatusColor.RED
 
 
+# Combined alias lookup: plastic aliases take priority for plastic classes
+_ALL_CLASS_ALIASES: dict[str, str] = {**MIXED_CLASS_ALIASES, **PLASTIC_CLASS_ALIASES}
+
+
 def normalize_taco_class(class_name: str) -> str:
     normalized = (
         class_name.strip()
@@ -68,11 +73,12 @@ def normalize_taco_class(class_name: str) -> str:
     )
     while "__" in normalized:
         normalized = normalized.replace("__", "_")
-    return ORGANIC_CLASS_ALIASES.get(normalized, normalized)
+    return _ALL_CLASS_ALIASES.get(normalized, normalized)
 
 
-def is_organic_detection(detection: VisionDetection) -> bool:
-    return normalize_taco_class(detection.class_name) in ORGANIC_TACO_CLASSES
+def is_odor_risk_detection(detection: VisionDetection) -> bool:
+    """Return True if the detected class is a known waste item (used for odor risk)."""
+    return normalize_taco_class(detection.class_name) in TRASH_CLASSES
 
 
 def analyze_comment_with_gemini(
@@ -247,7 +253,7 @@ class VisualAnalysisService:
         status_color = assign_status_color(fullness_score)
 
         odor_risk_flag = any(
-            is_organic_detection(detection) for detection in model_result.detections
+            is_odor_risk_detection(detection) for detection in model_result.detections
         ) and fullness_score >= 50
         if odor_risk_flag:
             status_color = StatusColor.RED
