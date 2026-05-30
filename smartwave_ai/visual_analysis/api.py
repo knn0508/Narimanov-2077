@@ -47,21 +47,29 @@ def create_app(
         # 1. Initialize tables and seed registry
         initialize_db()
 
-        # 2. Preload YOLOv8
-        model_path = os.getenv("SMARTWAVE_YOLO_MODEL_PATH")
-        if model_path:
+        # 2. Preload per-category YOLOv8 models
+        from smartwave_ai.visual_analysis.inference import UltralyticsYoloV8Model
+        device = os.getenv("SMARTWAVE_DEVICE", "cpu")
+
+        mixed_path = os.getenv("SMARTWAVE_YOLO_MODEL_MIXED")
+        if mixed_path and os.path.exists(mixed_path):
             try:
-                from ultralytics import YOLO
-                app.state.yolo_model = YOLO(model_path)
-                device = os.getenv("SMARTWAVE_DEVICE", "cuda")
-                app.state.yolo_model.to(device)
-                print(f"YOLOv8 Model loaded successfully on device: {device}")
-                # Re-create visual analysis service using preloaded instance
-                visual_service = app.state.visual_analysis_service
-                from smartwave_ai.visual_analysis.inference import create_vision_model
-                visual_service.vision_model = create_vision_model(app.state.yolo_model)
-            except Exception as e:
-                print(f"Failed to preload YOLOv8 model: {e}")
+                app.state.yolo_model_mixed = UltralyticsYoloV8Model(
+                    mixed_path, model_label="yolov8m-seg-mixed"
+                )
+                print(f"[mixed] YOLOv8 model loaded from {mixed_path}")
+            except Exception as exc:
+                print(f"[mixed] Failed to load model: {exc}")
+
+        plastic_path = os.getenv("SMARTWAVE_YOLO_MODEL_PLASTIC")
+        if plastic_path and os.path.exists(plastic_path):
+            try:
+                app.state.yolo_model_plastic = UltralyticsYoloV8Model(
+                    plastic_path, model_label="yolov8n-seg-plastic"
+                )
+                print(f"[plastic] YOLOv8 model loaded from {plastic_path}")
+            except Exception as exc:
+                print(f"[plastic] Failed to load model: {exc}")
 
         # 3. Preload Gemini for Comment AI
         gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -70,23 +78,21 @@ def create_app(
                 import google.generativeai as genai
                 genai.configure(api_key=gemini_api_key)
                 available_models = [
-                    m.name for m in genai.list_models() 
-                    if 'generateContent' in m.supported_generation_methods
+                    m.name for m in genai.list_models()
+                    if "generateContent" in m.supported_generation_methods
                 ]
                 target_model = next((m for m in available_models if "flash" in m), None)
                 if not target_model:
                     target_model = next((m for m in available_models if "pro" in m), "gemini-pro")
-                
                 app.state.gemini_model = genai.GenerativeModel(target_model)
                 print(f"Google Gemini Model loaded successfully: {target_model}")
-            except Exception as e:
-                print(f"Failed to preload Gemini model: {e}")
+            except Exception as exc:
+                print(f"Failed to preload Gemini model: {exc}")
 
         yield
-        if hasattr(app.state, "yolo_model"):
-            del app.state.yolo_model
-        if hasattr(app.state, "gemini_model"):
-            del app.state.gemini_model
+        for attr in ("yolo_model_mixed", "yolo_model_plastic", "gemini_model"):
+            if hasattr(app.state, attr):
+                delattr(app.state, attr)
 
     app = FastAPI(
         title="SmartWave AI Engine",
@@ -155,6 +161,24 @@ def create_app(
         client_host = request.client.host if request.client else None
         ip_address_hash = hash_text(client_host)
         visual_service: VisualAnalysisService = app.state.visual_analysis_service
+
+        # Select the per-category YOLO model based on the container type from the registry
+        from smartwave_ai.visual_analysis.registry import ContainerRegistry
+        from smartwave_ai.visual_analysis.inference import create_vision_model
+        registry: ContainerRegistry = app.state.visual_analysis_service.registry
+        try:
+            container_record = registry.get(container_id)
+            ctype = container_record.container_type.lower() if container_record else "mixed"
+        except Exception:
+            ctype = "mixed"
+
+        if ctype == "plastic" and hasattr(app.state, "yolo_model_plastic"):
+            visual_service.vision_model = app.state.yolo_model_plastic
+        elif ctype != "plastic" and hasattr(app.state, "yolo_model_mixed"):
+            visual_service.vision_model = app.state.yolo_model_mixed
+        else:
+            # Fallback: create on-the-fly (uses HeuristicVisionModel if no weights)
+            visual_service.vision_model = create_vision_model(container_type=ctype)
 
         try:
             gemini_model = getattr(request.app.state, "gemini_model", None)

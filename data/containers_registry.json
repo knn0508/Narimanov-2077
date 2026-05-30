@@ -1,12 +1,12 @@
 [
   {
-    "container_id": "NRM-ORG-001",
+    "container_id": "NRM-MIX-001",
     "qr_code_uuid": "1b8bcf70-4a18-48f2-a6a6-b3f3f5c10a01",
     "geo_coordinates": {
       "lat": 40.409278,
       "lon": 49.867092
     },
-    "container_type": "organic",
+    "container_type": "mixed",
     "container_geometry": "rectangular",
     "district_zone": "Narimanov-Residential-North",
     "assigned_route_id": "ROUTE-NRM-AM-01",
@@ -26,17 +26,16 @@
     "last_emptied_timestamp": "2026-05-29T11:40:00Z"
   },
   {
-    "container_id": "NRM-REC-021",
+    "container_id": "NRM-PLA-021",
     "qr_code_uuid": "c4b711dd-411d-4a84-91c4-41af2690d021",
     "geo_coordinates": {
       "lat": 40.416908,
       "lon": 49.861722
     },
-    "container_type": "recycling",
+    "container_type": "plastic",
     "container_geometry": "rectangular",
     "district_zone": "Narimanov-Business-East",
-    "assigned_route_id": "ROUTE-NRM-REC-01",
+    "assigned_route_id": "ROUTE-NRM-PLA-01",
     "last_emptied_timestamp": "2026-05-29T08:05:00Z"
   }
 ]
-

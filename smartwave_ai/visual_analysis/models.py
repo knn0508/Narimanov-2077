@@ -14,9 +14,8 @@ class StatusColor(str, Enum):
 
 
 class ContainerType(str, Enum):
-    ORGANIC = "organic"
     MIXED = "mixed"
-    RECYCLING = "recycling"
+    PLASTIC = "plastic"
 
 
 class ContainerGeometry(str, Enum):

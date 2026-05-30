@@ -10,49 +10,88 @@ INFERENCE_LATENCY_P95_TARGET_MS = 800
 DEFAULT_REGISTRY_PATH = BASE_DIR / "data" / "containers_registry.json"
 DEFAULT_AUDIT_LOG_PATH = BASE_DIR / "runtime" / "audit_log.jsonl"
 
-ORGANIC_TACO_CLASSES = {
+# Classes expected in MIXED containers (general household/street waste)
+MIXED_TACO_CLASSES = {
+    "trash",
+    "waste",
+    "garbage",
+    "litter",
     "food_waste",
-    "organic_matter",
-    "biohazard_waste",
-    "decomposed_material",
     "food_packaging_soiled",
+    "paper",
+    "cardboard",
+    "carton",
+    "can",
+    "glass_bottle",
+    "aluminium_foil",
 }
 
-ORGANIC_CLASS_ALIASES = {
+MIXED_CLASS_ALIASES = {
     "food_waste": "food_waste",
-    "organic_matter": "organic_matter",
-    "biohazard_waste": "biohazard_waste",
-    "decomposed_material": "decomposed_material",
     "food_packaging_soiled": "food_packaging_soiled",
     "disposable_food_container": "food_packaging_soiled",
     "foam_food_container": "food_packaging_soiled",
     "meal_carton": "food_packaging_soiled",
     "pizza_box": "food_packaging_soiled",
-
-    # COCO food mapping aliases for testing
-    "apple": "organic_matter",
-    "banana": "organic_matter",
-    "orange": "organic_matter",
-    "broccoli": "organic_matter",
-    "carrot": "organic_matter",
-    "hot_dog": "food_waste",
+    "paper": "paper",
+    "cardboard": "cardboard",
+    "carton": "carton",
+    "can": "can",
+    "glass_bottle": "glass_bottle",
+    "aluminium_foil": "aluminium_foil",
+    # COCO aliases
+    "bottle": "glass_bottle",
+    "cup": "food_packaging_soiled",
+    "bowl": "food_packaging_soiled",
+    "banana": "food_waste",
+    "apple": "food_waste",
+    "sandwich": "food_waste",
     "pizza": "food_waste",
     "donut": "food_waste",
     "cake": "food_waste",
-    "sandwich": "food_waste",
-    "wine_glass": "food_packaging_soiled",
 }
 
-TRASH_CLASSES = {
-    # TACO classes
-    "trash", "waste", "garbage", "litter", "refuse",
-    "food_waste", "organic_matter", "biohazard_waste", "decomposed_material", "food_packaging_soiled",
-    "aluminium_foil", "plastic_bottle", "glass_bottle", "can", "paper", "cardboard", "carton",
-    "plastic_bag", "disposable_food_container", "foam_food_container", "meal_carton", "pizza_box",
-    # Waste model classes
-    "glass", "metal", "plastic",
-    # COCO classes mapped for testing
-    "bottle", "cup", "wine_glass", "bowl", "backpack", "handbag", "umbrella",
-    "banana", "apple", "sandwich", "orange", "broccoli", "carrot", "hot_dog", "pizza", "donut", "cake"
+# Classes expected in PLASTIC containers (plastic-specific waste)
+PLASTIC_TACO_CLASSES = {
+    "plastic_bottle",
+    "plastic_bag",
+    "plastic_container",
+    "plastic",
+    "plastic_lid",
+    "plastic_straw",
+    "plastic_film",
+    "styrofoam",
+    "foam_food_container",
 }
+
+PLASTIC_CLASS_ALIASES = {
+    "plastic_bottle": "plastic_bottle",
+    "plastic_bag": "plastic_bag",
+    "plastic_container": "plastic_container",
+    "plastic": "plastic",
+    "plastic_lid": "plastic_lid",
+    "plastic_straw": "plastic_straw",
+    "plastic_film": "plastic_film",
+    "styrofoam": "styrofoam",
+    "foam_food_container": "foam_food_container",
+    # COCO aliases
+    "bottle": "plastic_bottle",
+    "cup": "plastic_container",
+    "backpack": "plastic_bag",
+    "handbag": "plastic_bag",
+}
+
+TRASH_CLASSES = (
+    MIXED_TACO_CLASSES
+    | PLASTIC_TACO_CLASSES
+    | {
+        # additional COCO classes useful for mask area calculation
+        "bottle", "cup", "wine_glass", "bowl", "backpack", "handbag", "umbrella",
+        "banana", "apple", "sandwich", "orange", "broccoli", "carrot",
+        "hot_dog", "pizza", "donut", "cake",
+        # raw labels from waste-specific models
+        "glass", "metal",
+    }
+)
+
 

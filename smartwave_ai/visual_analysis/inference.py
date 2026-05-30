@@ -63,27 +63,34 @@ class HeuristicVisionModel:
         contrast_component = min(std / 85.0, 1.0) * 0.35
         confidence = max(0.35, min(0.88, 0.45 + contrast_component))
 
-        detections = []
-        if container.container_type.lower() == "organic" or "org" in container.container_id.lower():
+        detections: list[VisionDetection] = []
+        container_type = container.container_type.lower() if container.container_type else ""
+        if container_type == "plastic" or "pla" in container.container_id.lower():
             detections = [
                 VisionDetection(
-                    class_name="food_waste",
-                    confidence=0.85,
-                    bbox_xyxy=(10.0, 20.0, 80.0, 90.0)
+                    class_name="plastic_bottle",
+                    confidence=0.88,
+                    bbox_xyxy=(10.0, 20.0, 80.0, 90.0),
                 ),
                 VisionDetection(
-                    class_name="organic_matter",
-                    confidence=0.78,
-                    bbox_xyxy=(15.0, 25.0, 75.0, 85.0)
-                )
+                    class_name="plastic_bag",
+                    confidence=0.82,
+                    bbox_xyxy=(15.0, 25.0, 75.0, 85.0),
+                ),
             ]
         else:
+            # mixed container fallback
             detections = [
                 VisionDetection(
                     class_name="trash",
                     confidence=0.90,
-                    bbox_xyxy=(10.0, 20.0, 85.0, 90.0)
-                )
+                    bbox_xyxy=(10.0, 20.0, 85.0, 90.0),
+                ),
+                VisionDetection(
+                    class_name="food_waste",
+                    confidence=0.75,
+                    bbox_xyxy=(20.0, 30.0, 70.0, 80.0),
+                ),
             ]
 
         return VisionModelResult(
@@ -95,14 +102,14 @@ class HeuristicVisionModel:
 
 
 class UltralyticsYoloV8Model:
-    model_name = "ultralytics-yolov8-seg"
+    """Wraps a single Ultralytics YOLOv8 segmentation model for one container category."""
 
-    def __init__(self, model_or_path: str | Any) -> None:
+    def __init__(self, model_or_path: str | Any, model_label: str = "yolov8-seg") -> None:
         try:
             from ultralytics import YOLO
         except ImportError as exc:
             raise RuntimeError(
-                "ultralytics is required when SMARTWAVE_YOLO_MODEL_PATH is set"
+                "ultralytics is required when a YOLO model path is set"
             ) from exc
 
         if isinstance(model_or_path, str):
@@ -110,20 +117,13 @@ class UltralyticsYoloV8Model:
         else:
             self._model = model_or_path
 
-        # Load secondary COCO model if available for organic and general object mapping
-        self._secondary_model = None
-        import os
-        secondary_path = "weights/yolov8n-seg.pt"
-        if os.path.exists(secondary_path) and (
-            not isinstance(model_or_path, str) or model_or_path != secondary_path
-        ):
-            try:
-                self._secondary_model = YOLO(secondary_path)
-                device = os.getenv("SMARTWAVE_DEVICE", "cpu")
-                self._secondary_model.to(device)
-                print(f"Loaded secondary COCO model successfully on device: {device}")
-            except Exception as e:
-                print(f"Failed to load secondary COCO model: {e}")
+        self.model_name = f"ultralytics-{model_label}"
+        device = os.getenv("SMARTWAVE_DEVICE", "cpu")
+        try:
+            self._model.to(device)
+            print(f"[{self.model_name}] loaded on device: {device}")
+        except Exception as exc:
+            print(f"[{self.model_name}] could not move to {device}: {exc}")
 
     def analyze(
         self, image_bytes: bytes, container: ContainerRecord
@@ -220,9 +220,36 @@ class UltralyticsYoloV8Model:
         )
 
 
-def create_vision_model(model_or_path: Any | None = None) -> VisionModel:
-    configured_model_path = model_or_path or os.getenv("SMARTWAVE_YOLO_MODEL_PATH")
-    if configured_model_path:
-        return UltralyticsYoloV8Model(configured_model_path)
+def create_vision_model(
+    model_or_path: Any | None = None,
+    container_type: str | None = None,
+) -> VisionModel:
+    """Return the correct VisionModel for the given container category.
+
+    - mixed   → SMARTWAVE_YOLO_MODEL_MIXED  (yolov8m-seg.pt)
+    - plastic → SMARTWAVE_YOLO_MODEL_PLASTIC (yolov8n-seg.pt)
+    Falls back to HeuristicVisionModel when no weight file is available.
+    """
+    if model_or_path is not None:
+        # Caller already resolved a model object / path (e.g. preloaded in lifespan)
+        return UltralyticsYoloV8Model(model_or_path)
+
+    ctype = (container_type or "").lower()
+
+    if ctype == "plastic":
+        path = os.getenv("SMARTWAVE_YOLO_MODEL_PLASTIC")
+        label = "yolov8n-seg-plastic"
+    else:
+        # default: mixed
+        path = os.getenv("SMARTWAVE_YOLO_MODEL_MIXED")
+        label = "yolov8m-seg-mixed"
+
+    if path and os.path.exists(path):
+        return UltralyticsYoloV8Model(path, model_label=label)
+
+    print(
+        f"[create_vision_model] No weight file found for type='{ctype}'. "
+        "Using HeuristicVisionModel fallback."
+    )
     return HeuristicVisionModel()
 
