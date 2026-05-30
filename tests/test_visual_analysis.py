@@ -39,7 +39,7 @@ def make_registry() -> ContainerRegistry:
     return ContainerRegistry(
         [
             ContainerRecord(
-                container_id="NRM-ORG-001",
+                container_id="bin-1",
                 geo_coordinates={"lat": 40.409278, "lon": 49.867092},
                 container_type="mixed",
                 container_geometry="rectangular",
@@ -48,7 +48,7 @@ def make_registry() -> ContainerRegistry:
                 last_emptied_timestamp=datetime(2026, 5, 29, tzinfo=timezone.utc),
             ),
             ContainerRecord(
-                container_id="NRM-MIX-014",
+                container_id="bin-2",
                 geo_coordinates={"lat": 40.402631, "lon": 49.872511},
                 container_type="mixed",
                 container_geometry="cylindrical",
@@ -109,7 +109,7 @@ def test_unknown_container_is_rejected_and_audited() -> None:
 
     with pytest.raises(UnknownContainerError) as raised:
         service.process_report(
-            container_id="NRM-UNKNOWN-999",
+            container_id="bin-unknown",
             image_bytes=b"image",
         )
 
@@ -132,7 +132,7 @@ def test_low_confidence_sets_human_review_and_blocks_auto_dispatch() -> None:
     )
 
     response = service.process_report(
-        container_id="NRM-ORG-001",
+        container_id="bin-1",
         image_bytes=b"image",
     )
 
@@ -162,7 +162,7 @@ def test_organic_detection_overrides_yellow_status_to_red() -> None:
     )
 
     response = service.process_report(
-        container_id="NRM-ORG-001",
+        container_id="bin-1",
         image_bytes=b"image",
     )
 
@@ -191,12 +191,12 @@ def test_api_accepts_raw_image_payload() -> None:
 
     png_bytes = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\xcf\xc0\x00\x00\x03\x01\x01\x00\xc9\xfe\x92\xef\x00\x00\x00\x00IEND\xaeB`\x82'
     response = client.post(
-        "/api/v1/containers/NRM-ORG-001/report",
+        "/api/v1/containers/bin-1/report",
         content=png_bytes,
     )
 
     assert response.status_code == 200
-    assert response.json()["container_id"] == "NRM-ORG-001"
+    assert response.json()["container_id"] == "bin-1"
     assert response.json()["status_color"] == "GREEN"
 
 

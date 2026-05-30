@@ -1,6 +1,6 @@
 [
   {
-    "container_id": "NRM-MIX-001",
+    "container_id": "bin-1",
     "geo_coordinates": {
       "lat": 40.409278,
       "lon": 49.867092
@@ -12,7 +12,7 @@
     "last_emptied_timestamp": "2026-05-29T04:15:00Z"
   },
   {
-    "container_id": "NRM-MIX-014",
+    "container_id": "bin-2",
     "geo_coordinates": {
       "lat": 40.402631,
       "lon": 49.872511
@@ -24,7 +24,7 @@
     "last_emptied_timestamp": "2026-05-29T11:40:00Z"
   },
   {
-    "container_id": "NRM-PLA-021",
+    "container_id": "bin-3",
     "geo_coordinates": {
       "lat": 40.416908,
       "lon": 49.861722
