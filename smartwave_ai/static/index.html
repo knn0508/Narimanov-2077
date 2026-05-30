@@ -458,14 +458,12 @@
                         <form id="report-form" onsubmit="submitVisualReport(event)">
                             <div class="form-group">
                                 <label for="report-container">Select Container</label>
-                                <select id="report-container" onchange="updateQrPlaceholder()">
+                                <select id="report-container">
                                     <option value="NRM-MIX-001">NRM-MIX-001 (Mixed Waste)</option>
                                     <option value="NRM-MIX-014">NRM-MIX-014 (Mixed Waste)</option>
                                     <option value="NRM-PLA-021">NRM-PLA-021 (Plastic Waste)</option>
                                 </select>
                             </div>
-                            <!-- QR UUID sent automatically based on selected container -->
-                            <input type="hidden" id="report-qr" value="1b8bcf70-4a18-48f2-a6a6-b3f3f5c10a01">
                             <div class="form-group">
                                 <label for="report-comment">Comment / Description (Azerbaijani)</label>
                                 <textarea id="report-comment" rows="2" placeholder="Zibil qabı dolub daşır, zibil torbaları yerə tökülüb..."></textarea>
@@ -585,22 +583,9 @@
             }
         }
 
-        // Setup and generate default worker token
         window.addEventListener('DOMContentLoaded', () => {
             generateWorkerToken();
-            updateQrPlaceholder();
         });
-
-        function updateQrPlaceholder() {
-            const container = document.getElementById('report-container').value;
-            const qrInput = document.getElementById('report-qr');
-            const uuidMap = {
-                'NRM-MIX-001': '1b8bcf70-4a18-48f2-a6a6-b3f3f5c10a01',
-                'NRM-MIX-014': '5c81e6a4-3e8e-4bb5-bc77-d7edb57c0e14',
-                'NRM-PLA-021': 'c4b711dd-411d-4a84-91c4-41af2690d021',
-            };
-            qrInput.value = uuidMap[container] || '';
-        }
 
         // Preview uploaded image
         function previewImage(event) {
@@ -620,7 +605,6 @@
         async function submitVisualReport(e) {
             e.preventDefault();
             const containerId = document.getElementById('report-container').value;
-            const qrCode = document.getElementById('report-qr').value;
             const commentText = document.getElementById('report-comment').value.trim();
             const fileInput = document.getElementById('report-file');
             const rawOutput = document.getElementById('report-raw');
@@ -643,7 +627,6 @@
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
-                        'X-QR-Code-UUID': qrCode,
                         'X-Session-ID': 'session-web-' + Math.random().toString(36).substring(3, 9),
                         'Content-Type': 'image/jpeg'
                     },

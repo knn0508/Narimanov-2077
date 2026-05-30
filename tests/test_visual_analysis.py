@@ -19,7 +19,7 @@ from smartwave_ai.visual_analysis.models import (
 )
 from smartwave_ai.visual_analysis.registry import ContainerRegistry
 from smartwave_ai.visual_analysis.service import (
-    UnknownQrCodeError,
+    UnknownContainerError,
     VisualAnalysisService,
     assign_status_color,
 )
@@ -40,9 +40,8 @@ def make_registry() -> ContainerRegistry:
         [
             ContainerRecord(
                 container_id="NRM-ORG-001",
-                qr_code_uuid="qr-001",
                 geo_coordinates={"lat": 40.409278, "lon": 49.867092},
-                container_type="organic",
+                container_type="mixed",
                 container_geometry="rectangular",
                 district_zone="Narimanov-Residential-North",
                 assigned_route_id="ROUTE-NRM-AM-01",
@@ -50,7 +49,6 @@ def make_registry() -> ContainerRegistry:
             ),
             ContainerRecord(
                 container_id="NRM-MIX-014",
-                qr_code_uuid="qr-014",
                 geo_coordinates={"lat": 40.402631, "lon": 49.872511},
                 container_type="mixed",
                 container_geometry="cylindrical",
@@ -97,7 +95,7 @@ def test_cylindrical_geometry_uses_segment_volume_formula() -> None:
     assert 0 < cylindrical_score < rectangular_score
 
 
-def test_unknown_qr_is_rejected_and_audited() -> None:
+def test_unknown_container_is_rejected_and_audited() -> None:
     workspace_tmp = make_test_dir()
     service = make_service(
         workspace_tmp,
@@ -109,17 +107,16 @@ def test_unknown_qr_is_rejected_and_audited() -> None:
         ),
     )
 
-    with pytest.raises(UnknownQrCodeError) as raised:
+    with pytest.raises(UnknownContainerError) as raised:
         service.process_report(
-            container_id="NRM-ORG-001",
-            qr_code_uuid="unknown-qr",
+            container_id="NRM-UNKNOWN-999",
             image_bytes=b"image",
         )
 
-    assert raised.value.error_code == "ERR_QR_UNREGISTERED"
+    assert raised.value.error_code == "ERR_CONTAINER_UNREGISTERED"
     entries = read_audit_entries(workspace_tmp)
-    assert entries[0]["action"] == "QR_REJECTED"
-    assert entries[0]["error_code"] == "ERR_QR_UNREGISTERED"
+    assert entries[0]["action"] == "CONTAINER_REJECTED"
+    assert entries[0]["error_code"] == "ERR_CONTAINER_UNREGISTERED"
 
 
 def test_low_confidence_sets_human_review_and_blocks_auto_dispatch() -> None:
@@ -136,7 +133,6 @@ def test_low_confidence_sets_human_review_and_blocks_auto_dispatch() -> None:
 
     response = service.process_report(
         container_id="NRM-ORG-001",
-        qr_code_uuid="qr-001",
         image_bytes=b"image",
     )
 
@@ -167,7 +163,6 @@ def test_organic_detection_overrides_yellow_status_to_red() -> None:
 
     response = service.process_report(
         container_id="NRM-ORG-001",
-        qr_code_uuid="qr-001",
         image_bytes=b"image",
     )
 
@@ -194,10 +189,10 @@ def test_api_accepts_raw_image_payload() -> None:
     )
     client = TestClient(create_app(service))
 
+    png_bytes = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\xcf\xc0\x00\x00\x03\x01\x01\x00\xc9\xfe\x92\xef\x00\x00\x00\x00IEND\xaeB`\x82'
     response = client.post(
         "/api/v1/containers/NRM-ORG-001/report",
-        headers={"X-QR-Code-UUID": "qr-001"},
-        content=b"raw-image-bytes",
+        content=png_bytes,
     )
 
     assert response.status_code == 200
@@ -205,24 +200,4 @@ def test_api_accepts_raw_image_payload() -> None:
     assert response.json()["status_color"] == "GREEN"
 
 
-def test_api_rejects_mismatched_qr() -> None:
-    workspace_tmp = make_test_dir()
-    service = make_service(
-        workspace_tmp,
-        VisionModelResult(
-            fill_height_ratio=0.25,
-            waste_mask_area_ratio=0.2,
-            confidence=0.86,
-            detections=(),
-        ),
-    )
-    client = TestClient(create_app(service))
 
-    response = client.post(
-        "/api/v1/containers/NRM-ORG-001/report",
-        headers={"X-QR-Code-UUID": "qr-014"},
-        content=b"raw-image-bytes",
-    )
-
-    assert response.status_code == 404
-    assert response.json()["error_code"] == "ERR_QR_UNREGISTERED"

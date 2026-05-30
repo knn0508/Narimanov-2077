@@ -13,10 +13,8 @@ class ContainerRegistry:
         self._records_internal = list(records) if records is not None else None
         if self._records_internal is not None:
             self._by_container_id = {record.container_id: record for record in self._records_internal}
-            self._by_qr_uuid = {record.qr_code_uuid: record for record in self._records_internal}
         else:
             self._by_container_id = {}
-            self._by_qr_uuid = {}
 
     @classmethod
     def from_json(cls, path: Path | str) -> "ContainerRegistry":
@@ -66,7 +64,6 @@ class ContainerRegistry:
             return [
                 ContainerRecord(
                     container_id=r.container_id,
-                    qr_code_uuid=r.qr_code_uuid,
                     geo_coordinates=GeoCoordinates(lat=r.lat, lon=r.lon),
                     container_type=r.container_type,
                     container_geometry=r.container_geometry,
@@ -91,17 +88,11 @@ class ContainerRegistry:
             db.close()
 
     def resolve(
-        self, container_id: str, qr_code_uuid: str | None = None
+        self, container_id: str
     ) -> ContainerRecord | None:
         if self._in_memory:
             if self._records_internal is not None:
-                if qr_code_uuid:
-                    record = self._by_qr_uuid.get(qr_code_uuid)
-                    if record is None or record.container_id != container_id:
-                        return None
-                    return record
-
-                return self._by_container_id.get(container_id) or self._by_qr_uuid.get(container_id)
+                return self._by_container_id.get(container_id)
 
             if hasattr(self, "json_path") and self.json_path.exists():
                 try:
@@ -109,12 +100,8 @@ class ContainerRegistry:
                         raw_records = json.load(file)
                     for r in raw_records:
                         rec = ContainerRecord.model_validate(r)
-                        if qr_code_uuid:
-                            if rec.qr_code_uuid == qr_code_uuid and rec.container_id == container_id:
-                                return rec
-                        else:
-                            if rec.container_id == container_id or rec.qr_code_uuid == container_id:
-                                return rec
+                        if rec.container_id == container_id:
+                            return rec
                 except Exception:
                     pass
             return None
@@ -126,21 +113,13 @@ class ContainerRegistry:
 
         db = SessionLocal()
         try:
-            if qr_code_uuid:
-                db_record = db.query(DbContainer).filter_by(qr_code_uuid=qr_code_uuid).first()
-                if db_record is None or db_record.container_id != container_id:
-                    return None
-            else:
-                db_record = db.query(DbContainer).filter(
-                    (DbContainer.container_id == container_id) | (DbContainer.qr_code_uuid == container_id)
-                ).first()
+            db_record = db.query(DbContainer).filter_by(container_id=container_id).first()
 
             if db_record is None:
                 return None
 
             return ContainerRecord(
                 container_id=db_record.container_id,
-                qr_code_uuid=db_record.qr_code_uuid,
                 geo_coordinates=GeoCoordinates(lat=db_record.lat, lon=db_record.lon),
                 container_type=db_record.container_type,
                 container_geometry=db_record.container_geometry,

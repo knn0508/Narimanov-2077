@@ -47,7 +47,6 @@ class ContainerRecord(BaseModel):
     model_config = ConfigDict(use_enum_values=True)
 
     container_id: str
-    qr_code_uuid: str
     geo_coordinates: GeoCoordinates
     container_type: ContainerType
     container_geometry: ContainerGeometry

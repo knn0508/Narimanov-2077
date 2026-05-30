@@ -20,7 +20,7 @@ from smartwave_ai.visual_analysis.models import ApiError, VisualAnalysisResponse
 from smartwave_ai.visual_analysis.registry import ContainerRegistry
 from smartwave_ai.visual_analysis.service import (
     EmptyImageError,
-    UnknownQrCodeError,
+    UnknownContainerError,
     VisionAnalysisError,
     VisualAnalysisService,
 )
@@ -152,9 +152,6 @@ def create_app(
         container_id: str,
         request: Request,
         comment: str | None = None,
-        x_qr_code_uuid: Annotated[
-            str | None, Header(alias="X-QR-Code-UUID")
-        ] = None,
         x_session_id: Annotated[str | None, Header(alias="X-Session-ID")] = None,
     ) -> JSONResponse | dict[str, object]:
         image_bytes = await request.body()
@@ -167,7 +164,7 @@ def create_app(
         from smartwave_ai.visual_analysis.inference import create_vision_model
         registry: ContainerRegistry = app.state.visual_analysis_service.registry
         try:
-            container_record = registry.get(container_id)
+            container_record = registry.resolve(container_id)
             ctype = container_record.container_type.lower() if container_record else "mixed"
         except Exception:
             ctype = "mixed"
@@ -184,21 +181,19 @@ def create_app(
             gemini_model = getattr(request.app.state, "gemini_model", None)
             response = visual_service.process_report(
                 container_id=container_id,
-                qr_code_uuid=x_qr_code_uuid,
                 image_bytes=image_bytes,
                 session_id=x_session_id,
                 ip_address_hash=ip_address_hash,
                 user_comment=comment,
                 gemini_model=gemini_model,
             )
-        except UnknownQrCodeError as exc:
+        except UnknownContainerError as exc:
             error = ApiError(
                 error_code=exc.error_code,
-                message="Unknown QR code. Container report rejected.",
+                message="Unknown container. Container report rejected.",
                 audit_entry_id=exc.audit_entry_id,
                 details={
                     "container_id": exc.container_id,
-                    "qr_code_uuid": exc.qr_code_uuid,
                 },
             )
             return JSONResponse(

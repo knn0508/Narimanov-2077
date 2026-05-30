@@ -37,7 +37,6 @@ class DbContainer(Base):
     __tablename__ = "containers"
 
     container_id = Column(String(64), primary_key=True, index=True)
-    qr_code_uuid = Column(String(64), unique=True, index=True)
     lat = Column(Float, nullable=False)
     lon = Column(Float, nullable=False)
     container_type = Column(String(64), nullable=False)
@@ -79,7 +78,6 @@ def seed_database_if_empty(db) -> None:
                 db.add(
                     DbContainer(
                         container_id=r["container_id"],
-                        qr_code_uuid=r["qr_code_uuid"],
                         lat=r["geo_coordinates"]["lat"],
                         lon=r["geo_coordinates"]["lon"],
                         container_type=r["container_type"],

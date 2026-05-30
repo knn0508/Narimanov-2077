@@ -1,7 +1,6 @@
 [
   {
     "container_id": "NRM-MIX-001",
-    "qr_code_uuid": "1b8bcf70-4a18-48f2-a6a6-b3f3f5c10a01",
     "geo_coordinates": {
       "lat": 40.409278,
       "lon": 49.867092
@@ -14,7 +13,6 @@
   },
   {
     "container_id": "NRM-MIX-014",
-    "qr_code_uuid": "5c81e6a4-3e8e-4bb5-bc77-d7edb57c0e14",
     "geo_coordinates": {
       "lat": 40.402631,
       "lon": 49.872511
@@ -27,7 +25,6 @@
   },
   {
     "container_id": "NRM-PLA-021",
-    "qr_code_uuid": "c4b711dd-411d-4a84-91c4-41af2690d021",
     "geo_coordinates": {
       "lat": 40.416908,
       "lon": 49.861722

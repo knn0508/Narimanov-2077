@@ -27,19 +27,17 @@ from smartwave_ai.visual_analysis.models import (
 from smartwave_ai.visual_analysis.registry import ContainerRegistry
 
 
-class UnknownQrCodeError(Exception):
-    error_code = "ERR_QR_UNREGISTERED"
+class UnknownContainerError(Exception):
+    error_code = "ERR_CONTAINER_UNREGISTERED"
 
     def __init__(
         self,
         container_id: str,
-        qr_code_uuid: str | None,
         audit_entry_id: str,
     ) -> None:
         self.container_id = container_id
-        self.qr_code_uuid = qr_code_uuid
         self.audit_entry_id = audit_entry_id
-        super().__init__("Unknown or mismatched QR code.")
+        super().__init__("Unknown or unregistered container.")
 
 
 class EmptyImageError(ValueError):
@@ -200,7 +198,6 @@ class VisualAnalysisService:
         *,
         container_id: str,
         image_bytes: bytes,
-        qr_code_uuid: str | None = None,
         session_id: str | None = None,
         ip_address_hash: str | None = None,
         user_comment: str | None = None,
@@ -210,28 +207,26 @@ class VisualAnalysisService:
             raise EmptyImageError("Image payload is required.")
 
         image_hash = sha256_hex(image_bytes)
-        container = self.registry.resolve(container_id, qr_code_uuid=qr_code_uuid)
+        container = self.registry.resolve(container_id)
         if container is None:
             audit_entry = build_audit_entry(
                 module="VISUAL_ANALYSIS",
-                action="QR_REJECTED",
+                action="CONTAINER_REJECTED",
                 input_hash=image_hash,
-                output_summary="ERR_QR_UNREGISTERED: unknown or mismatched QR code",
+                output_summary="ERR_CONTAINER_UNREGISTERED: unknown or unregistered container",
                 model_used=AI_MODEL_VERSION,
                 confidence_score=0.0,
                 human_reviewable=True,
                 session_id=session_id,
                 ip_address_hash=ip_address_hash,
                 extra={
-                    "error_code": UnknownQrCodeError.error_code,
+                    "error_code": UnknownContainerError.error_code,
                     "container_id": container_id,
-                    "qr_code_uuid": qr_code_uuid,
                 },
             )
             self.audit_logger.append(audit_entry)
-            raise UnknownQrCodeError(
+            raise UnknownContainerError(
                 container_id=container_id,
-                qr_code_uuid=qr_code_uuid,
                 audit_entry_id=str(audit_entry["audit_entry_id"]),
             )
 
