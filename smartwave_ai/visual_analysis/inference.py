@@ -118,6 +118,7 @@ class UltralyticsYoloV8Model:
             self._model = model_or_path
 
         self.model_name = f"ultralytics-{model_label}"
+        self._secondary_model = None
         device = os.getenv("SMARTWAVE_DEVICE", "cpu")
         try:
             self._model.to(device)
