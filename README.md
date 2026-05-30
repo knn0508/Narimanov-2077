@@ -1,3 +1,13 @@
+---
+title: SmartWave AI
+emoji: 🌊
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # SmartWave AI
 
 FastAPI service for the SmartWave visual analysis module in Narimanov District,
